@@ -1,17 +1,10 @@
 import React from 'react';
-import Header from './components/layout/Header';
-import AboutUs from './components/AboutUs';
-import ServiceSection from './components/layout/ServiceSection';
+import HomePage from './components/pages/HomePage';
 
 const App: React.FC = () => {
   return (
     <div className="font-sans">
-      <Header
-        title="Relax, Rejuvenate, and Renew"
-        subtitle="Nikmati kemewahan yang dibuat khusus untuk Anda"
-      />
-      <AboutUs />
-      <ServiceSection />
+      <HomePage />
     </div>
   );
 };
