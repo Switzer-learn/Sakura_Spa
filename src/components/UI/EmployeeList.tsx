@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const App: React.FC = () => {
+const EmployeeList: React.FC = () => {
   const [user, setUser] = useState({
     fullName: "Nama Lengkap",
     phone: "No HP",
@@ -102,4 +102,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default EmployeeList;
