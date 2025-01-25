@@ -7,7 +7,8 @@ export { default as ServiceSection } from './layout/HomePage/ServiceSection'
 export { default as EmployeeRegistration } from './layout/Admin/EmployeeRegistration'
 export { default as AddInventoryForm } from './layout/Admin/AddInventoryForm'
 export { default as InventoryList } from './layout/Admin/InventoryList'
-
+export { default as EmployeeList } from './layout/Admin/EmployeeList'
+export { default as CashierPage } from './layout/Admin/CashierPage'
 
 //UI
 export { default as TextInput } from './UI/TextInput'

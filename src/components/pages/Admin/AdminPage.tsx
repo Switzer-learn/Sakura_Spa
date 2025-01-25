@@ -13,7 +13,7 @@ const AdminPage: React.FC = () => {
       case "AddEmployee":
         return <Component.EmployeeRegistration />
       case "EmployeeList":
-        return <Component.EmployeeListCard /> //need to be displayed with many employee
+        return <Component.EmployeeList /> //need to be displayed with many employee
       case "addInventory":
         return <Component.AddInventoryForm />
       case "inventoryList":
@@ -21,7 +21,7 @@ const AdminPage: React.FC = () => {
       case "revenueReport":
         return <div>Revenue Report</div>
       case "cashier":
-        return <div>Cashier</div>
+        return <Component.CashierPage />
       case "schedule":
         return <div>Schedule</div>
       // Add more cases as needed for other menu options

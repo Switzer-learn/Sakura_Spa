@@ -18,7 +18,7 @@
       "phoneNum": "082123456789",
       "Age": 28,
       "IDCardNum": "3273023456789012",
-      "Gaji": 6000000,
+      "Salary": 6000000,
       "Username": "dewi.lestari",
       "Password": "dewistaff2023",
       "Role": "therapist"
@@ -31,7 +31,7 @@
       "phoneNum": "083112233445",
       "Age": 35,
       "IDCardNum": "3578021234567890",
-      "Gaji": 5000000,
+      "Salary": 5000000,
       "Username": "budi.staff",
       "Password": "staffbudi123",
       "Role": "staff"

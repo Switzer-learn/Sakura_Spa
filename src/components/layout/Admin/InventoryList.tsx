@@ -39,7 +39,6 @@ export default function InventoryList() {
         columns={columns}
         initialState={{ pagination: { paginationModel } }}
         pageSizeOptions={[5, 10, 20]}
-        checkboxSelection
         disableRowSelectionOnClick
         sx={{
           '& .MuiDataGrid-root': {
