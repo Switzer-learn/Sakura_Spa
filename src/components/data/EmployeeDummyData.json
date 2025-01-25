@@ -1,0 +1,40 @@
+[
+    {
+      "ID": "EMP001",
+      "fullName": "Ahmad Fadli",
+      "Address": "Jl. Sudirman No. 45, Jakarta",
+      "phoneNum": "081234567890",
+      "Age": 30,
+      "IDCardNum": "3171012345678901",
+      "Salary": 8000000,
+      "Username": "ahmad.fadli",
+      "Password": "password123",
+      "Role": "admin"
+    },
+    {
+      "ID": "EMP002",
+      "fullName": "Dewi Lestari",
+      "Address": "Jl. Mangga Dua No. 23, Bandung",
+      "phoneNum": "082123456789",
+      "Age": 28,
+      "IDCardNum": "3273023456789012",
+      "Gaji": 6000000,
+      "Username": "dewi.lestari",
+      "Password": "dewistaff2023",
+      "Role": "therapist"
+      
+    },
+    {
+      "ID": "EMP003",
+      "fullName": "Budi Santoso",
+      "Address": "Jl. Ahmad Yani No. 12, Surabaya",
+      "phoneNum": "083112233445",
+      "Age": 35,
+      "IDCardNum": "3578021234567890",
+      "Gaji": 5000000,
+      "Username": "budi.staff",
+      "Password": "staffbudi123",
+      "Role": "staff"
+      }
+  ]
+  

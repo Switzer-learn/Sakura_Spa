@@ -1,12 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import * as Components from './components'
 
 const App: React.FC = () => {
-  const [selectedPage,setSelectedPage] = useState('')
 
   return (
     <div className="">
-      <Components.EmployeeListCard />
+      <Components.AdminPage />
     </div>
   );
 };

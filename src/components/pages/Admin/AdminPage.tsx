@@ -1,14 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import * as Component from "../../../components";
 
 const AdminPage: React.FC = () => {
+  const [selectedMenu,setSelectedMenu] = useState('')
+
+  const handleSideMenuClick = (menu:string) =>{
+    setSelectedMenu(menu);
+  }
+
+  const displayContent = () =>{
+    switch (selectedMenu) {
+      case "AddEmployee":
+        return <Component.EmployeeRegistration />
+      case "EmployeeList":
+        return <Component.EmployeeListCard /> //need to be displayed with many employee
+      case "addInventory":
+        return <Component.AddInventoryForm />
+      case "inventoryList":
+        return <Component.InventoryList />
+      case "revenueReport":
+        return <div>Revenue Report</div>
+      case "cashier":
+        return <div>Cashier</div>
+      case "schedule":
+        return <div>Schedule</div>
+      // Add more cases as needed for other menu options
+      default:
+        return <div>Select a menu option</div>
+    }
+  }
   return (
     <div className='flex'>
       <div className='items-start'>
-        <Component.AdminSideMenu />
+        <Component.AdminSideMenu onMenuClick={handleSideMenuClick} />
       </div>
       <div className='mx-auto'>
-        <Component.EmployeeRegistration />
+        {displayContent()}
       </div>
     </div>
   );

@@ -1,0 +1,83 @@
+[
+    {
+      "ID": "INV001",
+      "Name": "Laptop Lenovo ThinkPad",
+      "Amount": 5,
+      "Satuan": "pcs",
+      "Keterangan": "Digunakan untuk administrasi kantor",
+      "Price": 15000000
+    },
+    {
+      "ID": "INV002",
+      "Name": "Meja Kerja",
+      "Amount": 10,
+      "Satuan": "pcs",
+      "Keterangan": "Untuk ruang staf baru",
+      "Price": 1000000
+    },
+    {
+      "ID": "INV003",
+      "Name": "Handuk Pijat",
+      "Amount": 50,
+      "Satuan": "pcs",
+      "Keterangan": "Handuk untuk layanan spa",
+      "Price": 50000
+    },
+    {
+      "ID": "INV004",
+      "Name": "Minyak Aromaterapi",
+      "Amount": 25,
+      "Satuan": "pcs",
+      "Keterangan": "Minyak dengan aroma lavender",
+      "Price": 75000
+    },
+    {
+      "ID": "INV005",
+      "Name": "Printer Canon",
+      "Amount": 2,
+      "Satuan": "pcs",
+      "Keterangan": "Digunakan untuk mencetak laporan",
+      "Price": 2500000
+    },
+    {
+      "ID": "INV006",
+      "Name": "Kertas A4",
+      "Amount": 20,
+      "Satuan": "rim",
+      "Keterangan": "Digunakan untuk kebutuhan cetak",
+      "Price": 50000
+    },
+    {
+      "ID": "INV007",
+      "Name": "Kursi Ergonomis",
+      "Amount": 15,
+      "Satuan": "pcs",
+      "Keterangan": "Untuk kenyamanan staf saat bekerja",
+      "Price": 750000
+    },
+    {
+      "ID": "INV008",
+      "Name": "AC Split 1.5 PK",
+      "Amount": 3,
+      "Satuan": "pcs",
+      "Keterangan": "AC untuk ruang rapat",
+      "Price": 3500000
+    },
+    {
+      "ID": "INV009",
+      "Name": "Televisi 42 Inch",
+      "Amount": 2,
+      "Satuan": "pcs",
+      "Keterangan": "Digunakan untuk presentasi di ruang meeting",
+      "Price": 5000000
+    },
+    {
+      "ID": "INV010",
+      "Name": "Cangkir Kopi",
+      "Amount": 100,
+      "Satuan": "pcs",
+      "Keterangan": "Untuk pantry kantor",
+      "Price": 25000
+    }
+  ]
+  
