@@ -5,10 +5,12 @@ export { default as Header } from './layout/HomePage/Header'
 export { default as Hero } from './layout/HomePage/Hero'
 export { default as ServiceSection } from './layout/HomePage/ServiceSection'
 export { default as EmployeeRegistration } from './layout/Admin/EmployeeRegistration'
-
+export { default as AddInventoryForm } from './layout/Admin/AddInventoryForm'
 
 //UI
 export { default as TextInput } from './UI/TextInput'
+export { default as EmployeeListCard } from './UI/EmployeeListCard'
 
 //Pages
 export { default as HomePage } from './pages/HomePage'
+export { default as CustomerOrderForm } from './pages/CustomerOrderForm'

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const EmployeeList: React.FC = () => {
+const EmployeeListCard: React.FC = () => {
   const [user, setUser] = useState({
     fullName: "Nama Lengkap",
     phone: "No HP",
@@ -79,7 +79,7 @@ const EmployeeList: React.FC = () => {
         {isEditing ? (
           <button
             onClick={handleSave}
-            className="rounded-full bg-blue-500 hover:bg-blue-600 px-4 py-2 text-white"
+            className="rounded-s-full bg-blue-500 hover:bg-blue-600 px-4 py-2 text-white"
           >
             Save
           </button>
@@ -102,4 +102,4 @@ const EmployeeList: React.FC = () => {
   );
 };
 
-export default EmployeeList;
+export default EmployeeListCard;
