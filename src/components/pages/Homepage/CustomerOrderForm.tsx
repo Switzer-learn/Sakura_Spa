@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import * as Components from '../../components'
+import * as Components from '../..'
 
 const CustomerOrderForm: React.FC = () => {
   const [dates, setDates] = useState('');

@@ -1,6 +1,6 @@
-import Header from "../layout/HomePage/Header";
-import Hero from "../layout/HomePage/Hero";
-import AboutUs from "../layout/HomePage/AboutUs";
+import Header from "../../layout/HomePage/Header";
+import Hero from "../../layout/HomePage/Hero";
+import AboutUs from "../../layout/HomePage/AboutUs";
 
 const HomePage=()=>{
     return(

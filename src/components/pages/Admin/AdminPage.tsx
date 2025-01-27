@@ -19,11 +19,13 @@ const AdminPage: React.FC = () => {
       case "inventoryList":
         return <Component.InventoryList />
       case "revenueReport":
-        return <div>Revenue Report</div>
+        return <Component.RevenueReport />
       case "cashier":
         return <Component.CashierPage />
       case "schedule":
         return <div>Schedule</div>
+      case "testing":
+        return <Component.OrderCard customerName="Abba" schedule={new Date().toString()} service='' duration='' therapistName="" onEdit={()=>console.log("hello")} onPayment={()=>console.log('payment pressed')} onSelect={()=>console.log('selected')}  />
       // Add more cases as needed for other menu options
       default:
         return <div>Select a menu option</div>
@@ -34,7 +36,7 @@ const AdminPage: React.FC = () => {
       <div className='items-start'>
         <Component.AdminSideMenu onMenuClick={handleSideMenuClick} />
       </div>
-      <div className='mx-auto'>
+      <div className='mx-auto '>
         {displayContent()}
       </div>
     </div>

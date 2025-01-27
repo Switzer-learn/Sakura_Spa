@@ -9,12 +9,15 @@ export { default as AddInventoryForm } from './layout/Admin/AddInventoryForm'
 export { default as InventoryList } from './layout/Admin/InventoryList'
 export { default as EmployeeList } from './layout/Admin/EmployeeList'
 export { default as CashierPage } from './layout/Admin/CashierPage'
+export { default as RevenueReport } from './layout/Admin/RevenueReport'
+
 
 //UI
 export { default as TextInput } from './UI/TextInput'
 export { default as EmployeeListCard } from './UI/EmployeeListCard'
+export { default as OrderCard } from './UI/OrderCard'
 
 //Pages
-export { default as HomePage } from './pages/HomePage'
-export { default as CustomerOrderForm } from './pages/CustomerOrderForm'
+export { default as HomePage } from './pages/Homepage/HomePage'
+export { default as CustomerOrderForm } from './pages/Homepage/CustomerOrderForm'
 export { default as AdminPage } from './pages/Admin/AdminPage'
