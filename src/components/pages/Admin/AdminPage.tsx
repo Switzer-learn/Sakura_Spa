@@ -25,8 +25,7 @@ const AdminPage: React.FC = () => {
       case "schedule":
         return <div>Schedule</div>
       case "testing":
-        return <Component.OrderCard customerName="Abba" schedule={new Date().toString()} service='' duration='' therapistName="" onEdit={()=>console.log("hello")} onPayment={()=>console.log('payment pressed')} onSelect={()=>console.log('selected')}  />
-      // Add more cases as needed for other menu options
+        return <Component.CustomerOrderForm />      // Add more cases as needed for other menu options
       default:
         return <div>Select a menu option</div>
     }

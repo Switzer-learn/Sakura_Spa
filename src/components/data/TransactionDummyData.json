@@ -6,7 +6,8 @@
       "service": "Full Body Massage",
       "duration": "90 minutes",
       "therapistName": "Jane Smith",
-      "paid":false
+      "paid":false,
+      "Amount":120000
     },
     {
       "id": "TX002",
@@ -15,7 +16,8 @@
       "service": "Facial Treatment",
       "duration": "60 minutes",
       "therapistName": "Emily Davis",
-      "paid":false
+      "paid":false,
+      "Amount":90000
     },
     {
       "id": "TX003",
@@ -24,7 +26,8 @@
       "service": "Hot Stone Therapy",
       "duration": "75 minutes",
       "therapistName": "Michael Lee",
-      "paid":false
+      "paid":false,
+      "Amount":100000
     },
     {
       "id": "TX004",
@@ -33,7 +36,8 @@
       "service": "Aromatherapy Massage",
       "duration": "60 minutes",
       "therapistName": "Sarah Wilson",
-      "paid":false
+      "paid":false,
+      "Amount":120000
     },
     {
       "id": "TX005",
@@ -42,7 +46,8 @@
       "service": "Reflexology",
       "duration": "45 minutes",
       "therapistName": "Laura Thompson",
-      "paid":false
+      "paid":false,
+      "Amount":75000
     },
     {
       "id": "TX006",
@@ -51,7 +56,8 @@
       "service": "Swedish Massage",
       "duration": "90 minutes",
       "therapistName": "Daniel Garcia",
-      "paid":false
+      "paid":false,
+      "Amount":150000
     },
     {
       "id": "TX007",
@@ -60,7 +66,8 @@
       "service": "Deep Tissue Massage",
       "duration": "120 minutes",
       "therapistName": "Olivia Moore",
-      "paid":true
+      "paid":true,
+      "Amount":200000
     },
     {
       "id": "TX008",
@@ -69,7 +76,8 @@
       "service": "Thai Massage",
       "duration": "90 minutes",
       "therapistName": "David Harris",
-      "paid":true
+      "paid":true,
+      "Amount":100000
     },
     {
       "id": "TX009",
@@ -78,7 +86,8 @@
       "service": "Couples Massage",
       "duration": "120 minutes",
       "therapistName": "Anna Walker",
-      "paid":true
+      "paid":true,
+      "Amount":250000
     },
     {
       "id": "TX010",
@@ -87,7 +96,8 @@
       "service": "Prenatal Massage",
       "duration": "60 minutes",
       "therapistName": "Christopher Young",
-      "paid":true
+      "paid":true,
+      "Amount":120000
     }
   ]
   
