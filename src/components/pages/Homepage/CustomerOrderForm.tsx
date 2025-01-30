@@ -1,9 +1,45 @@
-import React, { useState } from "react";
-import * as Components from '../..'
+import React, { useEffect, useState } from "react";
+import * as Components from '../../../components'
+import {api} from '../../../services/api'
 
 const CustomerOrderForm: React.FC = () => {
   const [dates, setDates] = useState('');
   const [time, setTime] = useState('');
+  const [originalServices,setOriginalServices] = useState<any[]>([]);
+  const [selectedServiceName,setSelectedServiceName] = useState<string>('Full Body Massage')
+  const [selectedService,setSelectedService] = useState<string[]>([]);
+  const [selectedServiceDuration,setSelectedServiceDuration] = useState<any[]>([]);
+
+  useEffect(()=>{
+    const fetchServicesData = async()=>{
+      const response = await api.getServices();
+      const data:any = Array.from(new Set(response?.map((services)=>{
+        return services.service_name;
+      })));
+      setOriginalServices(data || [])
+      console.log(data);
+    }
+    fetchServicesData();
+  },[])
+
+  useEffect(()=>{
+    console.log(selectedServiceName)
+    const data:any = originalServices.filter((service)=>{
+      service === selectedServiceName;
+    })
+    setSelectedServiceDuration(data);
+  },[selectedServiceName])
+
+  function handleSelectedService(e:any){
+    setSelectedServiceName(e.target.value);
+    console.log(e.target.value)
+  }
+
+  function handleDurationChange(e:any){
+    setSelectedServiceDuration(e.target.value);
+    console.log(e.target.value)
+  }
+
 
   return (
     <div id='customerOrderForm' className='flex flex-col items-center p-4'>
@@ -46,6 +82,27 @@ const CustomerOrderForm: React.FC = () => {
                   className='w-full px-3 py-2 border border-gray-300 rounded-md'
                   required
                 />
+              </div>
+              <div className='flex flex-col'>
+                <label className='font-medium text-gray-700 mb-2'>Layanan</label>
+                <select onChange={handleSelectedService} value={selectedServiceName}>
+                  {originalServices.map((order,index)=>(
+                    <option key={index}>{order}</option>
+                  ))}
+                </select>
+                <label className='font-medium text-gray-700 mb-2'>Durasi</label>
+                <select onChange={handleDurationChange} value={selectedServiceDuration||0}>
+                  {selectedServiceDuration.map((order,index)=>(
+                    <option key={index}>{order.service_duration}</option>
+                  ))}
+                </select>
+                <label className='font-medium text-gray-700 mb-2'>Durasi</label>
+                <select>
+                  {originalServices.map((order)=>(
+                    <option>{order.service_name}</option>
+                  ))}
+                </select>
+                
               </div>
             </div>
           </div>

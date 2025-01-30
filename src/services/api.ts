@@ -12,11 +12,6 @@ export const api = {
     // Implementation
   },
 
-  // Services
-  getServices: async () => {
-    // Implementation
-  },
-
   // Customers
   getCustomers: async () => {
     let { data, error } = await supabase
@@ -61,6 +56,19 @@ export const api = {
       console.log('Transaction Data:', data);
       return data; // Return the fetched data
     }
-  }
+  },
+
+  //services
+  getServices: async()=> {
+    let { data,error } = await supabase.from('services').select('*');
+    if(error){
+      console.error('Error fetching inventory data : ', error);
+      return null
+    }
+    return data;
+  },
+
+  //insert
+  
   
 };

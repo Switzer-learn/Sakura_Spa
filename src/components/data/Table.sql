@@ -114,3 +114,41 @@ BEGIN
     WHERE t.transaction_id = p_transaction_id;
 END;
 $$ LANGUAGE plpgsql;
+
+
+--services
+CREATE TABLE Services (
+    service_id SERIAL PRIMARY KEY,
+    service_name VARCHAR(255) NOT NULL,
+    service_duration numeric not null,
+    service_price numeric not null,
+    service_type varchar not null,
+    keterangan varchar
+);
+
+insert into services (service_name,service_duration,service_price,service_type,keterangan)
+values 
+('Full Body Massage',60,90000,'Standart Service',''),
+('Full Body Massage',90,125000,'Standart Service',''),
+('Full Body Massage',120,160000,'Standart Service',''),
+('Massage Punggung',30,60000,'Standart Service',''),
+('Massage Tangan & Pundak',30,160000,'Standart Service',''),
+('Refleksi Kaki',30,60000,'Standart Service',''),
+('Refleksi Kaki',60,90000,'Standart Service',''),
+('Kerokan',30,30000,'Standart Service',''),
+('Totok Wajah',30,60000,'Standart Service',''),
+('Ear Candle',30,60000,'Standart Service',''),
+('Baby Feet Treatment',60,130000,'Standart Service',''),
+('Waxing Kaki',20,85000,'Standart Service',''),
+('Waxing Tangan',20,85000,'Standart Service',''),
+('Waxing Ketiak',20,85000,'Standart Service',''),
+('Ogenki Spa',90,110000,'Paket Treatment Service','Full Body Massage + Kerokan'),
+('Ogenki Spa',120,180000,'Paket Treatment Service','Full Body Massage + Kerokan'),
+('Rirakku Spa',90,140000,'Paket Treatment Service',''),
+('Rirakku Spa',120,200000,'Paket Treatment Service',''),
+('Utsukushi Spa',90,140000,'Paket Treatment Service','Full Body Massage + Totok Wajah'),
+('Utsukushi Spa',120,200000,'Paket Treatment Service','Full Body Massage + Totok Wajah'),
+('Sakura Complete Spa',150,250000,'Paket Service','Full Body Massage,Totok Wajah, Ear Candle, Refleksi'),
+('Eye Lash',0,125000,'By Order Service',''),
+('Brow Bomber',0,125000,'By Order Service',''),
+('Lash Lift',0,125000,'By Order Service','')

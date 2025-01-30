@@ -25,7 +25,9 @@ const AdminPage: React.FC = () => {
       case "schedule":
         return <div>Schedule</div>
       case "testing":
-        return <Component.CustomerList />      // Add more cases as needed for other menu options
+        return <Component.CustomerOrderForm /> 
+      case "customerList":
+        return <Component.CustomerList />       // Add more cases as needed for other menu options
       default:
         return <div>Select a menu option</div>
     }
