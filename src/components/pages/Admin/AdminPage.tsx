@@ -25,7 +25,7 @@ const AdminPage: React.FC = () => {
       case "schedule":
         return <div>Schedule</div>
       case "testing":
-        return <Component.CustomerOrderForm />      // Add more cases as needed for other menu options
+        return <Component.CustomerList />      // Add more cases as needed for other menu options
       default:
         return <div>Select a menu option</div>
     }
@@ -35,10 +35,13 @@ const AdminPage: React.FC = () => {
       <div className='items-start'>
         <Component.AdminSideMenu onMenuClick={handleSideMenuClick} />
       </div>
-      <div className='mx-auto '>
-        {displayContent()}
+      <div className='bg-linear-to-r from-red-500 to-green-500 w-screen'>
+        <div className='mx-auto '>
+          {displayContent()}
+        </div>
       </div>
     </div>
+
   );
 };
 

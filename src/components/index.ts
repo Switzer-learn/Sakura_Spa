@@ -10,6 +10,7 @@ export { default as InventoryList } from './layout/Admin/InventoryList'
 export { default as EmployeeList } from './layout/Admin/EmployeeList'
 export { default as CashierPage } from './layout/Admin/CashierPage'
 export { default as RevenueReport } from './layout/Admin/RevenueReport'
+export { default as CustomerList } from './layout/Admin/CustomerList'
 
 
 //UI
@@ -21,3 +22,4 @@ export { default as OrderCard } from './UI/OrderCard'
 export { default as HomePage } from './pages/Homepage/HomePage'
 export { default as CustomerOrderForm } from './pages/Homepage/CustomerOrderForm'
 export { default as AdminPage } from './pages/Admin/AdminPage'
+export { default as CustomerRegistrationForm } from './pages/Homepage/CustomerRegistrationForm'

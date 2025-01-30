@@ -1,24 +1,63 @@
+# Node modules and dependencies
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
 # Logs
-logs
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+*.log
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
+# IDE settings
+.vscode/
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build and cache files
+dist/
+out/
+build/
+.cache/
+.next/
+.nuxt/
+.svelte-kit/
+coverage/
+public/
+temp/
+tmp/
+
+# TypeScript
+*.tsbuildinfo
+
+# Dependency directories
+bower_components/
+jspm_packages/
+
+# Firebase
+.firebaserc
+firebase-debug.log
+
+# Miscellaneous
+*.bak
+*.orig
+*.rej
+
+# Local overrides
+.local/

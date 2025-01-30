@@ -3,38 +3,34 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import {api} from '../../../services/api'
 
-export default function EmployeeList() {
+export default function CustomerList() {
   const [loading, setLoading] = useState(true); // Loading state
   const [rows, setRows] = useState<any[]>([]); // Data rows
 
   // Simulate loading data
   useEffect(() => {
-    const fetchEmployees = async () => {
-      const employeesData: any[] = (await api.getEmployees()) || [];
-      console.log(employeesData)
+    const fetchCustomer = async () => {
+      const customerData: any[] = (await api.getCustomers()) || [];
+
       // Preprocess rows immediately after fetching
-      const processedRows = employeesData.map((data, index) => ({
+      const processedRows = customerData.map((data, index) => ({
         ...data,
-        id: data.employee_id || index,
+        id: data.customer_id || index,
       }));
-      
+
       setRows(processedRows);
       setLoading(false); // Data is now loaded
     };
 
-    fetchEmployees();
+    fetchCustomer();
   }, []);
-
+  
   const columns: GridColDef[] = [
-    { field: 'employee_id', headerName: 'ID', width: 70 },
-    { field: 'full_name', headerName: 'Nama Lengkap', width: 200 },
-    { field: 'address', headerName: 'Alamat', width: 200 },
-    { field: 'phone_num', headerName: 'Nomor Telepon', type: 'number', width: 100 },
-    { field: 'age', headerName: 'Umur', width: 100 },
-    { field: 'id_card_num', headerName: 'No KTP', width: 100 },
-    { field: 'salary', headerName: 'Gaji (IDR)', type: 'number', width: 100 },
-    { field: 'username', headerName: 'Username', width: 100 },
-    { field: 'role', headerName: 'Jabatan', width: 100 }
+    { field: 'customer_id', headerName: 'ID',type:'number'},
+    { field: 'customer_name', headerName: 'Nama Lengkap' },
+    { field: 'phone_number', headerName: 'Nomor Telepon', type: 'number'},
+    { field: 'username', headerName: 'Username'},
+    { field: 'member_since', headerName: 'Member Sejak' }
   ];
 
   const paginationModel = { page: 0, pageSize: 10 };
