@@ -11,6 +11,7 @@ export { default as EmployeeList } from './layout/Admin/EmployeeList'
 export { default as CashierPage } from './layout/Admin/CashierPage'
 export { default as RevenueReport } from './layout/Admin/RevenueReport'
 export { default as CustomerList } from './layout/Admin/CustomerList'
+export { default as TherapistSchedule } from './layout/Admin/TherapistSchedule'
 
 
 //UI

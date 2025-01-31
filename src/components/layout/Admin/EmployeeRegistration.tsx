@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import * as Component from "../../../components";
+import {api} from '../../../services/api'
 
 const EmployeeRegistration: React.FC = () => {
   const [role, setRole] = useState("Therapist");
@@ -22,9 +23,26 @@ const EmployeeRegistration: React.FC = () => {
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Submitted", { ...formData, role: role === "Lainnya" ? newRole : role });
+    
+    // Add the new role to formData if the role is 'Lainnya'
+    const updatedFormData = {
+      ...formData,
+      role: role === "Lainnya" ? newRole : role // If role is 'Lainnya', use the new role
+    };
+  
+    // Pass updatedFormData to the API
+    const response = await api.addUpdateEmployee(updatedFormData);
+  
+    console.log("Form Submitted", updatedFormData);
+  
+    if (response.status === 200) {
+      alert('New Employee successfully registered');
+    } else {
+      alert('Failed to input new employee, check console log');
+      console.log('Failed to register', response.message);
+    }
   };
 
   // Role selector change handler

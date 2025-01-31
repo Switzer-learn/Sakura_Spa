@@ -37,7 +37,7 @@ export default function CustomerList() {
 
   return (
     <div className=''>
-      <h1 className='text-xl font-bold underline text-center my-2'>Employee List</h1>
+      <h1 className='text-xl font-bold underline text-center my-2'>Customer List</h1>
       <Paper
         sx={{
           height: 500,

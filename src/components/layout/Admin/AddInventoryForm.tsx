@@ -1,7 +1,7 @@
 import * as React from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import Inventory from "../../data/InventoryDummy.json";
+import {api} from '../../../services/api'
 
 const AddInventoryForm: React.FC = () => {
   const [jumlah, setJumlah] = React.useState(0);
@@ -10,22 +10,31 @@ const AddInventoryForm: React.FC = () => {
   const [harga, setHarga] = React.useState(0);
   const [inventoryName, setInventoryName] = React.useState("");
   const [inventoryId, setInventoryId] = React.useState("");
+  const [inventoryData,setInventoryData] = React.useState<any[]>([])
 
   // Check if the entered inventory name matches data
+  React.useEffect(()=>{
+    const fetchInventory =async()=>{
+      const response = await api.getInventory();
+      setInventoryData(response||[]);
+    }
+    fetchInventory();
+  },[])
+
   React.useEffect(() => {
-    const matchedInventory = Inventory.find((item) => item.Name === inventoryName);
+    const matchedInventory = inventoryData.find((item) => item.name === inventoryName);
     if (matchedInventory) {
-      setInventoryId(matchedInventory.ID || "");
-      setJumlah(matchedInventory.Amount || 0);
-      setSatuan(matchedInventory.Satuan || "pcs");
-      setKeterangan(matchedInventory.Keterangan || "");
-      setHarga(matchedInventory.Price || 0);
+      setInventoryId(matchedInventory.inventory_id || "");
+      setJumlah(matchedInventory.amount || 0);
+      setSatuan(matchedInventory.unit || "pcs");
+      setKeterangan(matchedInventory.description || "");
+      setHarga(matchedInventory.price || 0);
     }
   }, [inventoryName]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const inventoryData = {
+    const formData = {
       inventoryId,
       inventoryName,
       jumlah,
@@ -33,7 +42,7 @@ const AddInventoryForm: React.FC = () => {
       keterangan,
       harga,
     };
-    console.log("Inventory Data:", inventoryData);
+    console.log("Inventory Data:", formData);
     // Add your form submission logic here
   };
 
@@ -67,7 +76,7 @@ const AddInventoryForm: React.FC = () => {
             id="inventoryName"
             freeSolo
             value={inventoryName}
-            options={Inventory.map((option) => option.Name)}
+            options={inventoryData.map((option) => option.name)}
             onInputChange={(event,newValue) => setInventoryName(newValue)}
             renderInput={(params) => (
               <TextField {...params} label="Nama Barang" required />

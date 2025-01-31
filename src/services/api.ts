@@ -1,5 +1,14 @@
 // API service functions
 import supabase from '../utils/supabase';
+import bcrypt from "bcryptjs";
+
+const saltRounds = parseInt(import.meta.env.SALT_ROUNDS);
+
+async function encryptNewPassword(pass:string){
+  const newPassword = await bcrypt.hash(pass, saltRounds);
+  return newPassword;
+}
+
 
 export const api = {
   // Auth
@@ -30,6 +39,15 @@ export const api = {
   //Employee
   getEmployees: async()=> {
     let { data,error } = await supabase.from('employees').select('*');
+    if(error){
+      console.error('Error fetching Employees data : ', error);
+      return null
+    }
+    return data;
+  },
+
+  getTherapist: async()=> {
+    let { data,error } = await supabase.from('employees').select('*').eq('role','therapist');
     if(error){
       console.error('Error fetching Employees data : ', error);
       return null
@@ -69,6 +87,37 @@ export const api = {
   },
 
   //insert
+  addUpdateEmployee: async (formData: any) => {
+    const newPassword = await encryptNewPassword(formData.password)
+    console.log(newPassword)
+    const { data, error } = await supabase
+      .from('employees')
+      .upsert(
+          { 
+            full_name: formData.fullName,
+            address: formData.address,
+            phone_num: formData.phoneNum,
+            age: formData.age,
+            id_card_num: formData.KTP,
+            salary: formData.salary,
+            username: formData.userName,
+            password: newPassword,
+            role: formData.role
+          }
+        , 
+        { 
+          onConflict: 'id_card_num' // This is correct as an array of strings
+        }
+      )
+      .select(); // Fetching the data after upsert
+  
+    if (error) {
+      console.error("Error upserting employee:", error);
+      return {status:500,message:error}
+    }
+    return {data:data,status:200};
+  },
+  
   
   
 };
