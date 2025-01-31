@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import {api} from '../../../services/api'
 
 // Define the type for the form data
 interface CustomerFormData {
@@ -42,19 +42,15 @@ const CustomerRegistration: React.FC = () => {
 
     try {
       // Replace with your backend API endpoint
-      const response = await axios.post('https://your-backend-api.com/customers', formData);
-
-      if (response.status === 201) {
-        setSubmissionStatus('Customer registered successfully!');
-        // Clear the form
-        setFormData({
-          name: '',
-          username: '',
-          password: '',
-          phoneNumber: '',
-        });
-      } else {
-        setSubmissionStatus('Failed to register customer. Please try again.');
+      const response = await api.addCustomer(formData);
+      if(response.status===200){
+        setSubmissionStatus('Registration successfull')
+      }else if(response.status==='23505'){
+        console.log(response.message);
+        setSubmissionStatus('Username already used, try another.');
+      }else{
+        console.log(response.message);
+        setSubmissionStatus('Failed to register customer, Please try again.');
       }
     } catch (error) {
       setSubmissionStatus('An error occurred. Please try again.');

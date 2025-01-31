@@ -86,10 +86,10 @@ export const api = {
     return data;
   },
 
-  //insert
+  //insert & update
+  //Employee
   addUpdateEmployee: async (formData: any) => {
     const newPassword = await encryptNewPassword(formData.password)
-    console.log(newPassword)
     const { data, error } = await supabase
       .from('employees')
       .upsert(
@@ -117,7 +117,48 @@ export const api = {
     }
     return {data:data,status:200};
   },
+  //Inventory
+  addUpdateInventory: async (formData: any) => {
+    const { data, error } = await supabase
+      .from('inventory')
+      .upsert(
+          { 
+            name: formData.inventoryName,
+            amount: formData.jumlah,
+            unit: formData.satuan,
+            description: formData.keterangan,
+            price: formData.harga,
+          }, 
+        { 
+          onConflict: 'name' // This is correct as an array of strings
+        }
+      )
+      .select(); // Fetching the data after upsert
   
-  
-  
+    if (error) {
+      console.error("Error upserting Inventory:", error);
+      return {status:500,message:error}
+    }
+    return {data:data,status:200};
+  },
+  //customer registration
+  addCustomer: async(formData:any)=>{
+    const newPassword = await encryptNewPassword(formData.password);
+    const { data, error } = await supabase
+      .from('customers')
+      .insert(
+          { 
+            customer_name: formData.name,
+            username: formData.username,
+            password: newPassword,
+            phone_number: formData.phoneNumber,
+          }
+      )
+      .select(); // Fetching the data after insert
+    if (error) {
+      console.error("Error registering Customer:", error);
+      return {status:error.code,message:error}
+    }
+    return {data:data,status:200};
+  }
 };

@@ -32,7 +32,7 @@ const AddInventoryForm: React.FC = () => {
     }
   }, [inventoryName]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const formData = {
       inventoryId,
@@ -43,6 +43,13 @@ const AddInventoryForm: React.FC = () => {
       harga,
     };
     console.log("Inventory Data:", formData);
+    const response = await api.addUpdateInventory(formData);
+    if(response.status==200){
+      alert('Inventory added successfully')
+    }else{
+      console.log(response.message)
+      alert('Inventory add failed, check console log')
+    }
     // Add your form submission logic here
   };
 
