@@ -9,17 +9,93 @@ async function encryptNewPassword(pass:string){
   return newPassword;
 }
 
+async function fetchUsername(dbName:string,username:string){
+  let {data} = await supabase.from(dbName)
+    .select('*')
+    .eq('username',username)
+    .single();
+
+    return data
+}
+
+function todayDate(){
+  const date = new Date()
+  const month = ()=>{
+    let result:any = date.getMonth()+1
+    if(result>10) result='0'+result;
+    return result;
+  }
+  const today = date.getFullYear() + '-' + month() +'-'+ date.getDate();
+  console.log('today',today);
+  return today;
+}
 
 export const api = {
   // Auth
-  login: async (credentials: { email: string; password: string }) => {
-    // Implementation
-  },
+  
+  customerRegister: async (credentials:any) => {
+  const { email, password, fullName,phoneNumber } = credentials;
+  
+  // Sign up user with Supabase Auth
+  const { data, error } = await supabase.auth.signUp(
+    { email, password,
+      options: {
+      emailRedirectTo: 'https://sakuraspa-mrly--5173--d20a0a75.local-credentialless.webcontainer.io/',
+      }, 
+    },
+    );
+  if (error) {
+    console.error("Registration error:", error);
+    console.log(error);
+    return { status: 400, message: error.message };
+  }
+  console.log(data);
+  // Insert into `customers` table, linking to auth user ID
+  const { error: customerError } = await supabase.from("customers_data").insert({
+    auth_user_id: data.user.id, // **Stores the auth user ID**
+    customer_name: fullName,
+    email:email,
+    phone_number:phoneNumber,
+    member_since: todayDate(),
+  });
 
-  // Orders
-  getOrders: async () => {
-    // Implementation
-  },
+  if (customerError) {
+    console.error("Error saving customer data:", customerError);
+    return { status: customerError.code, message: "Failed to create customer profile" };
+  }
+
+  return { status: 200, message: "Registration successful", user: data.user };
+},
+
+// **LOGIN using Supabase Auth**
+login: async ({ email, password }) => {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    console.error("Login error:", error);
+    return { status: 400, message: error.message };
+  }
+  return { status: 200, message: "Login successful", user: data.user };
+},
+
+// **LOGOUT**
+logout: async () => {
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error("Logout error:", error);
+    return { status: 500, message: error.message };
+  }
+  return { status: 200, message: "Logged out successfully" };
+},
+
+// **GET CURRENT LOGGED-IN USER**
+getCurrentUser: async () => {
+  const { data, error } = await supabase.auth.getUser();
+  if (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
+  return data.user; // **Returns logged-in user's ID**
+},
 
   // Customers
   getCustomers: async () => {
@@ -31,7 +107,6 @@ export const api = {
       console.error('Error fetching customers:', error);
       return null;
     }
-
     return data;
   },
 
