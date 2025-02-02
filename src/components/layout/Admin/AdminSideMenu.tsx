@@ -144,6 +144,14 @@ const AdminSideMenu = (props: any) => {
                 Testing Register
               </button>
             </div>
+            <div>
+              <button
+                className="w-full text-left py-2 px-4 hover:bg-green-700"
+                onClick={() => props.onMenuClick("testingCustomerOrder")}
+              >
+                Testing Customer Order
+              </button>
+            </div>
           </div>
         </div>
       </div>

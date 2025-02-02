@@ -30,6 +30,14 @@ function todayDate(){
   return today;
 }
 
+function generateTransactionId(){
+  const date = new Date();
+  const month = date.getMonth()+1;
+  const randNum = Math.floor(Math.random()*1000)
+  let trxId = 'ORD-'+date.getFullYear()+month+date.getDate()+randNum;
+  return trxId;
+}
+
 export const api = {
   // Auth
   
@@ -51,19 +59,20 @@ export const api = {
   }
   console.log(data);
   // Insert into `customers` table, linking to auth user ID
-  const { error: customerError } = await supabase.from("customers_data").insert({
-    auth_user_id: data.user.id, // **Stores the auth user ID**
-    customer_name: fullName,
-    email:email,
-    phone_number:phoneNumber,
-    member_since: todayDate(),
-  });
+  if(data.user){
+    const { error: customerError } = await supabase.from("customers").insert({
+      auth_user_id: data.user.id, // **Stores the auth user ID**
+      customer_name: fullName,
+      email:email,
+      phone_number:phoneNumber,
+      member_since: todayDate(),
+    });
 
-  if (customerError) {
-    console.error("Error saving customer data:", customerError);
-    return { status: customerError.code, message: "Failed to create customer profile" };
+    if (customerError) {
+      console.error("Error saving customer data:", customerError);
+      return { status: customerError.code, message: "Failed to create customer profile" };
+    }
   }
-
   return { status: 200, message: "Registration successful", user: data.user };
 },
 
@@ -110,6 +119,19 @@ getCurrentUser: async () => {
     return data;
   },
 
+  getSpecificCustomer:async(id:string)=>{
+    let {data,error} = await supabase
+      .from('customers')
+      .select('*')
+      .eq('auth_user_id',id)
+      .single();
+
+      if(error){
+        return {status:500, message:error}
+      }
+      return data;
+  },
+
   //getInformation
   //Employee
   getEmployees: async()=> {
@@ -141,7 +163,6 @@ getCurrentUser: async () => {
   //Transaction
   getTransactions: async () => {
     let { data, error } = await supabase.rpc('get_transaction_details');
-  
     if (error) {
       console.error('Error fetching transaction details:', error);
       return null;
@@ -235,5 +256,47 @@ getCurrentUser: async () => {
       return {status:error.code,message:error}
     }
     return {data:data,status:200};
+  },
+
+  //Order / transactions
+  addOrders : async(formData:any) =>{
+    //console.log(formData);
+    const {customer_id,therapist_id,paid,date,time,service} = formData;
+      const { data, error } = await supabase
+        .from('transactions')
+        .insert(
+            { 
+              transaction_id : generateTransactionId(),
+              customer_id : customer_id,
+              schedule : date+' '+time,
+              service_id : service.service_id ,
+              duration : service.service_duration,
+              therapist_id : therapist_id,
+              paid : paid,
+              amount : service.service_price
+            }
+        )
+        .select(); // Fetching the data after insert
+      if (error) {
+        console.error("Error registering Customer:", error);
+        return {status:error.code,message:error}
+      }
+      return {data:data,status:200};
+  },
+
+  setTherapist:async(input:any)=>{
+    const {therapist_id,transaction_id} = input;
+    let {data,error} = await supabase
+      .from('transactions')
+      .update({
+        therapist_id:therapist_id
+      })
+      .eq('transaction_id',transaction_id);
+    
+      if(error){
+        console.log('Error updating therapist ',error)
+        return {status:500,message:error}
+      }
+      return {status:200,message:'Therapist assigned'}
   }
 };

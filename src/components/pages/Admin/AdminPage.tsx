@@ -28,6 +28,8 @@ const AdminPage: React.FC = () => {
         return <Component.LoginPage /> 
       case "testingRegister":
           return <Component.CustomerRegistrationForm /> 
+      case "testingCustomerOrder":
+          return <Component.CustomerOrderForm /> 
       case "customerList":
         return <Component.CustomerList />       // Add more cases as needed for other menu options
       default:

@@ -19,9 +19,11 @@ const TherapistSchedule = () => {
     useEffect(()=>{
       async function fetchTherapistData(){
         const response = await api.getTherapist();
-        setTherapistNames(response.map((therapist)=>{
-          return therapist.full_name;
-        })||[]);
+        if(response){
+          setTherapistNames(response.map((therapist)=>{
+            return therapist.full_name;
+          })||[]);
+        }
       }
       fetchTherapistData();
     },[])

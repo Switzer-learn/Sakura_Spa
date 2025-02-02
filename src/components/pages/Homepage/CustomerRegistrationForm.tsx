@@ -36,7 +36,7 @@ const CustomerRegistration: React.FC = () => {
     try {
       const response = await api.customerRegister(formData);
       if (response.status === 200) {
-        setSubmissionStatus('Registration successful');
+        setSubmissionStatus('Registration successful, please check your email and confirm your registration');
       } else if (response.status === '23505') {
         setSubmissionStatus('User already exist, go to login page.');
       } else {

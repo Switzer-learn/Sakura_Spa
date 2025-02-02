@@ -6,8 +6,8 @@ const CustomerOrderForm: React.FC = () => {
   const [dates, setDates] = useState('');
   const [time, setTime] = useState('');
   const [customerName, setCustomerName] = useState('');
+  const [customerId,setCustomerId] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [gender, setGender] = useState('Male');
   const [originalServices, setOriginalServices] = useState<any[]>([]);
   const [serviceName, setServiceName] = useState<string[]>([]);
   const [serviceDuration, setServiceDuration] = useState<any[]>([]);
@@ -16,6 +16,7 @@ const CustomerOrderForm: React.FC = () => {
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [treatmentDescription, setTreatmentDescription] = useState<string>('');
   const [finalService, setFinalService] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true); // New loading state
 
   const formatPrice = (price:number) => {
     return new Intl.NumberFormat("en-US", {
@@ -23,6 +24,22 @@ const CustomerOrderForm: React.FC = () => {
       maximumFractionDigits: 0,
     }).format(price);
   };
+
+  useEffect(() => {
+    async function fetchCurrentUser() {
+      const response = await api.getCurrentUser();
+      if(response) {
+        setCustomerId(response.id);
+        const customerData = await api.getSpecificCustomer(response.id);
+        if(customerData) {
+          setCustomerName(customerData.customer_name);
+          setPhoneNumber(customerData.phone_number);
+          setLoading(false); // Set loading to false once name and phone are fetched
+        }
+      }
+    }
+    fetchCurrentUser();
+  }, []);
 
   useEffect(() => {
     const fetchServicesData = async () => {
@@ -58,18 +75,32 @@ const CustomerOrderForm: React.FC = () => {
     setSelectedServiceDuration(Number(e.target.value));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const formData = {
+      customer_id: customerId,
       customer_name: customerName,
       phone_number: phoneNumber,
-      gender,
       date: dates,
+      therapist_id:null,
+      paid:false,
       time,
       service: finalService.length ? finalService[0] : {},
     };
     console.log("Submitted Data:", formData);
+    const response = await api.addOrders(formData);
+    console.log(response);
     // Here you can send `formData` to your API
+  }
+
+  // Show a loading spinner or message while data is being fetched
+  if (loading) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <img src='./Sakura_Spa_Logo.png' className='animate-pulse size-52 flex my-auto mx-auto' />
+        <span className="text-lg font-semibold text-gray-700">Loading...</span>
+      </div>
+    );
   }
 
   return (
@@ -80,15 +111,8 @@ const CustomerOrderForm: React.FC = () => {
           <div className='w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4'>
             <span className='text-xl font-semibold mb-4 text-gray-700'>Personal Information</span>
             <div className='flex flex-col'>
-              <Components.TextInput id='fullName' label='Full Name' placeholder='Enter Full Name' type='text' required onChange={(e:any) => setCustomerName(e.target.value)} />
-              <Components.TextInput id='phoneNumber' label='Phone Number' placeholder='+62' type='text' required onChange={(e:any) => setPhoneNumber(e.target.value)} />
-              <div className='mb-4'>
-                <label className='font-medium text-gray-700 mb-2 block'>Gender</label>
-                <select className='w-full px-3 py-2 border border-gray-300 rounded-md' onChange={(e) => setGender(e.target.value)}>
-                  <option>Male</option>
-                  <option>Female</option>
-                </select>
-              </div>
+              <Components.TextInput id='fullName' label='Full Name' placeholder='Enter Full Name' type='text' value={customerName} disabled />
+              <Components.TextInput id='phoneNumber' label='Phone Number' placeholder='+62' type='text' value={phoneNumber} disabled />
             </div>
           </div>
           <div className='w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4'>
