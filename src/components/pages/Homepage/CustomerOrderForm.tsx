@@ -6,7 +6,7 @@ const CustomerOrderForm: React.FC = () => {
   const [dates, setDates] = useState('');
   const [time, setTime] = useState('');
   const [customerName, setCustomerName] = useState('');
-  const [customerId,setCustomerId] = useState('');
+  const [customerId, setCustomerId] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [originalServices, setOriginalServices] = useState<any[]>([]);
   const [serviceName, setServiceName] = useState<string[]>([]);
@@ -16,9 +16,9 @@ const CustomerOrderForm: React.FC = () => {
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [treatmentDescription, setTreatmentDescription] = useState<string>('');
   const [finalService, setFinalService] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true); // New loading state
+  const [loading, setLoading] = useState(true);
 
-  const formatPrice = (price:number) => {
+  const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "decimal",
       maximumFractionDigits: 0,
@@ -28,13 +28,13 @@ const CustomerOrderForm: React.FC = () => {
   useEffect(() => {
     async function fetchCurrentUser() {
       const response = await api.getCurrentUser();
-      if(response) {
+      if (response) {
         setCustomerId(response.id);
         const customerData = await api.getSpecificCustomer(response.id);
-        if(customerData) {
+        if (customerData) {
           setCustomerName(customerData.customer_name);
           setPhoneNumber(customerData.phone_number);
-          setLoading(false); // Set loading to false once name and phone are fetched
+          setLoading(false);
         }
       }
     }
@@ -63,7 +63,7 @@ const CustomerOrderForm: React.FC = () => {
   }, [selectedService]);
 
   useEffect(() => {
-    const data = filteredData.filter(service => service.service_duration == selectedServiceDuration);
+    const data = filteredData.filter(service => service.service_duration === selectedServiceDuration);
     setFinalService(data);
   }, [selectedServiceDuration]);
 
@@ -82,18 +82,40 @@ const CustomerOrderForm: React.FC = () => {
       customer_name: customerName,
       phone_number: phoneNumber,
       date: dates,
-      therapist_id:null,
-      paid:false,
+      therapist_id: null,
+      paid: false,
       time,
       service: finalService.length ? finalService[0] : {},
     };
     console.log("Submitted Data:", formData);
     const response = await api.addOrders(formData);
     console.log(response);
-    // Here you can send `formData` to your API
+    if (response.status === 200) {
+      alert('Scheduling berhasil');
+    } else {
+      alert('Ada yang gagal');
+      console.log(response);
+    }
   }
 
-  // Show a loading spinner or message while data is being fetched
+  // Restrict past dates
+  const today = new Date().toISOString().split("T")[0];
+
+  // Generate valid time slots (8 AM - 7 PM in 30-minute increments)
+  const generateTimeSlots = () => {
+    const timeSlots = [];
+    for (let hour = 8; hour < 20; hour++) {
+      timeSlots.push(`${String(hour).padStart(2, "0")}:00`);
+      timeSlots.push(`${String(hour).padStart(2, "0")}:30`);
+    }
+    //timeSlots.push("19:30"); // Add the final 7:00 PM slot
+    return timeSlots;
+  };
+
+  // Valid time slots based on date
+  const validTimeSlots = generateTimeSlots();
+  const minTime = dates === today ? validTimeSlots.find(slot => slot >= new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })) || "08:00" : "08:00";
+
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center h-screen">
@@ -120,30 +142,35 @@ const CustomerOrderForm: React.FC = () => {
             <div className='flex flex-col gap-4'>
               <div className='flex flex-col'>
                 <label className='font-medium text-gray-700 mb-2'>Date</label>
-                <input type='date' onChange={(e) => setDates(e.target.value)} value={dates} className='w-full px-3 py-2 border border-gray-300 rounded-md' required />
+                <input type='date' min={today} onChange={(e) => setDates(e.target.value)} value={dates} className='w-full px-3 py-2 border border-gray-300 rounded-md' required />
               </div>
               <div className='flex flex-col'>
                 <label className='font-medium text-gray-700 mb-2'>Time</label>
-                <input type='time' onChange={(e) => setTime(e.target.value)} value={time} className='w-full px-3 py-2 border border-gray-300 rounded-md' required />
+                <select onChange={(e) => setTime(e.target.value)} value={time} className='w-full px-3 py-2 border border-gray-300 rounded-md' required>
+                  <option value="" disabled>Select a time</option>
+                  {validTimeSlots.filter(slot => dates !== today || slot >= minTime).map((slot, index) => (
+                    <option key={index} value={slot}>{slot}</option>
+                  ))}
+                </select>
               </div>
               <div className='flex flex-col'>
-                <label className='font-medium text-gray-700 mb-2'>Layanan</label>
+                <label className='font-medium text-gray-700 mb-2'>Service</label>
                 <select onChange={handleSelectedService} value={selectedService || ''} className='w-full px-3 py-2 border border-gray-300 rounded-md'>
                   <option value="" disabled>Select your option</option>
                   {serviceName.map((order, index) => (
                     <option key={index}>{order}</option>
                   ))}
                 </select>
-                {treatmentDescription && <span className='my-2 text-gray-700'>Keterangan: {treatmentDescription}</span>}
-                <label className='font-medium text-gray-700 mb-2'>Durasi</label>
+                {treatmentDescription && <span className='my-2 text-gray-700'>Description: {treatmentDescription}</span>}
+                <label className='font-medium text-gray-700 mb-2'>Duration</label>
                 <select onChange={handleDurationChange} value={selectedServiceDuration || 0} className='w-full px-3 py-2 border border-gray-300 rounded-md'>
                   <option value="" disabled>Select your option</option>
                   {serviceDuration.map((order, index) => (
-                    <option key={index} value={order.service_duration}>{order.service_duration}</option>
+                    <option key={index} value={order.service_duration}>{order.service_duration} minutes</option>
                   ))}
                 </select>
                 {finalService.length > 0 && finalService[0]?.service_price && (
-                  <span className='text-gray-700'>Harga : Rp.{formatPrice(finalService[0].service_price)},-</span>
+                  <span className='text-gray-700'>Price: Rp.{formatPrice(finalService[0].service_price)},-</span>
                 )}
               </div>
             </div>

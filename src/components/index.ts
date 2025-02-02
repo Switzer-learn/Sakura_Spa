@@ -13,12 +13,14 @@ export { default as RevenueReport } from './layout/Admin/RevenueReport'
 export { default as CustomerList } from './layout/Admin/CustomerList'
 export { default as TherapistSchedule } from './layout/Admin/TherapistSchedule'
 export { default as LoginPage } from './layout/LoginPage'
+export { default as paymentPage } from './layout/Admin/paymentPage'
 
 
 //UI
 export { default as TextInput } from './UI/TextInput'
 export { default as EmployeeListCard } from './UI/EmployeeListCard'
 export { default as OrderCard } from './UI/OrderCard'
+export * from './UI/Dialog'
 
 //Pages
 export { default as HomePage } from './pages/Homepage/HomePage'

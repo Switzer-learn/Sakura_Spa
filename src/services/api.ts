@@ -144,7 +144,7 @@ getCurrentUser: async () => {
   },
 
   getTherapist: async()=> {
-    let { data,error } = await supabase.from('employees').select('*').eq('role','therapist');
+    let { data,error } = await supabase.from('employees').select('*').eq('role','Therapist');
     if(error){
       console.error('Error fetching Employees data : ', error);
       return null
@@ -192,7 +192,7 @@ getCurrentUser: async () => {
           { 
             full_name: formData.fullName,
             address: formData.address,
-            phone_num: formData.phoneNum,
+            phone_number: formData.phoneNum,
             age: formData.age,
             id_card_num: formData.KTP,
             salary: formData.salary,
@@ -298,5 +298,10 @@ getCurrentUser: async () => {
         return {status:500,message:error}
       }
       return {status:200,message:'Therapist assigned'}
+  },
+
+  processPayment:async(data:any)=>{
+    console.log(data);
+    return {status:200, message:data}
   }
 };

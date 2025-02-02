@@ -35,7 +35,7 @@ export default function InventoryList() {
           price: formatPrice(data.price) || 0,
         }));
         console.log(inventoryData)
-        setRows(processedRows);
+        setRows(processedRows.sort());
       } catch (error) {
         console.error('Error fetching inventory:', error);
       } finally {

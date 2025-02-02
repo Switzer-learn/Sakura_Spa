@@ -11,14 +11,13 @@ export default function EmployeeList() {
   useEffect(() => {
     const fetchEmployees = async () => {
       const employeesData: any[] = (await api.getEmployees()) || [];
-      console.log(employeesData)
       // Preprocess rows immediately after fetching
       const processedRows = employeesData.map((data, index) => ({
         ...data,
         id: data.employee_id || index,
       }));
       
-      setRows(processedRows);
+      setRows(processedRows.sort());
       setLoading(false); // Data is now loaded
     };
 

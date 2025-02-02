@@ -33,7 +33,7 @@ const AdminPage: React.FC = () => {
       case "customerList":
         return <Component.CustomerList />       // Add more cases as needed for other menu options
       default:
-        return <div>Select a menu option</div>
+        return <Component.CashierPage />
     }
   }
   return (
