@@ -20,7 +20,7 @@ const AdminSideMenu = (props: any) => {
         id="sideMenu"
         className={`${
           menuOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 transition-transform transform fixed md:static flex flex-col w-64 h-screen bg-green-800 z-40`}
+        } md:translate-x-0 transition-transform transform fixed md:static flex flex-col w-64 h-auto min-h-screen bg-green-800 z-40`}
       >
         {/* Logo Section */}
         <div className="flex flex-col justify-center align-middle my-5">
@@ -131,9 +131,25 @@ const AdminSideMenu = (props: any) => {
             <div>
               <button
                 className="w-full text-left py-2 px-4 hover:bg-green-700"
-                onClick={() => props.onMenuClick("testing")}
+                onClick={() => props.onMenuClick("testingLogin")}
               >
-                Testing
+                Testing Login
+              </button>
+            </div>
+            <div>
+              <button
+                className="w-full text-left py-2 px-4 hover:bg-green-700"
+                onClick={() => props.onMenuClick("testingRegister")}
+              >
+                Testing Register
+              </button>
+            </div>
+            <div>
+              <button
+                className="w-full text-left py-2 px-4 hover:bg-green-700"
+                onClick={() => props.onMenuClick("testingCustomerOrder")}
+              >
+                Testing Customer Order
               </button>
             </div>
           </div>

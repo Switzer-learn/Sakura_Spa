@@ -6,8 +6,8 @@ const CustomerOrderForm: React.FC = () => {
   const [dates, setDates] = useState('');
   const [time, setTime] = useState('');
   const [customerName, setCustomerName] = useState('');
+  const [customerId, setCustomerId] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [gender, setGender] = useState('Male');
   const [originalServices, setOriginalServices] = useState<any[]>([]);
   const [serviceName, setServiceName] = useState<string[]>([]);
   const [serviceDuration, setServiceDuration] = useState<any[]>([]);
@@ -16,13 +16,30 @@ const CustomerOrderForm: React.FC = () => {
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [treatmentDescription, setTreatmentDescription] = useState<string>('');
   const [finalService, setFinalService] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const formatPrice = (price:number) => {
+  const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "decimal",
       maximumFractionDigits: 0,
     }).format(price);
   };
+
+  useEffect(() => {
+    async function fetchCurrentUser() {
+      const response = await api.getCurrentUser();
+      if (response) {
+        setCustomerId(response.id);
+        const customerData = await api.getSpecificCustomer(response.id);
+        if (customerData) {
+          setCustomerName(customerData.customer_name);
+          setPhoneNumber(customerData.phone_number);
+          setLoading(false);
+        }
+      }
+    }
+    fetchCurrentUser();
+  }, []);
 
   useEffect(() => {
     const fetchServicesData = async () => {
@@ -46,7 +63,7 @@ const CustomerOrderForm: React.FC = () => {
   }, [selectedService]);
 
   useEffect(() => {
-    const data = filteredData.filter(service => service.service_duration == selectedServiceDuration);
+    const data = filteredData.filter(service => service.service_duration === selectedServiceDuration);
     setFinalService(data);
   }, [selectedServiceDuration]);
 
@@ -58,18 +75,54 @@ const CustomerOrderForm: React.FC = () => {
     setSelectedServiceDuration(Number(e.target.value));
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const formData = {
+      customer_id: customerId,
       customer_name: customerName,
       phone_number: phoneNumber,
-      gender,
       date: dates,
+      therapist_id: null,
+      paid: false,
       time,
       service: finalService.length ? finalService[0] : {},
     };
     console.log("Submitted Data:", formData);
-    // Here you can send `formData` to your API
+    const response = await api.addOrders(formData);
+    console.log(response);
+    if (response.status === 200) {
+      alert('Scheduling berhasil');
+    } else {
+      alert('Ada yang gagal');
+      console.log(response);
+    }
+  }
+
+  // Restrict past dates
+  const today = new Date().toISOString().split("T")[0];
+
+  // Generate valid time slots (8 AM - 7 PM in 30-minute increments)
+  const generateTimeSlots = () => {
+    const timeSlots = [];
+    for (let hour = 8; hour < 20; hour++) {
+      timeSlots.push(`${String(hour).padStart(2, "0")}:00`);
+      timeSlots.push(`${String(hour).padStart(2, "0")}:30`);
+    }
+    //timeSlots.push("19:30"); // Add the final 7:00 PM slot
+    return timeSlots;
+  };
+
+  // Valid time slots based on date
+  const validTimeSlots = generateTimeSlots();
+  const minTime = dates === today ? validTimeSlots.find(slot => slot >= new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })) || "08:00" : "08:00";
+
+  if (loading) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <img src='./Sakura_Spa_Logo.png' className='animate-pulse size-52 flex my-auto mx-auto' />
+        <span className="text-lg font-semibold text-gray-700">Loading...</span>
+      </div>
+    );
   }
 
   return (
@@ -80,15 +133,8 @@ const CustomerOrderForm: React.FC = () => {
           <div className='w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4'>
             <span className='text-xl font-semibold mb-4 text-gray-700'>Personal Information</span>
             <div className='flex flex-col'>
-              <Components.TextInput id='fullName' label='Full Name' placeholder='Enter Full Name' type='text' required onChange={(e:any) => setCustomerName(e.target.value)} />
-              <Components.TextInput id='phoneNumber' label='Phone Number' placeholder='+62' type='text' required onChange={(e:any) => setPhoneNumber(e.target.value)} />
-              <div className='mb-4'>
-                <label className='font-medium text-gray-700 mb-2 block'>Gender</label>
-                <select className='w-full px-3 py-2 border border-gray-300 rounded-md' onChange={(e) => setGender(e.target.value)}>
-                  <option>Male</option>
-                  <option>Female</option>
-                </select>
-              </div>
+              <Components.TextInput id='fullName' label='Full Name' placeholder='Enter Full Name' type='text' value={customerName} disabled />
+              <Components.TextInput id='phoneNumber' label='Phone Number' placeholder='+62' type='text' value={phoneNumber} disabled />
             </div>
           </div>
           <div className='w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4'>
@@ -96,30 +142,35 @@ const CustomerOrderForm: React.FC = () => {
             <div className='flex flex-col gap-4'>
               <div className='flex flex-col'>
                 <label className='font-medium text-gray-700 mb-2'>Date</label>
-                <input type='date' onChange={(e) => setDates(e.target.value)} value={dates} className='w-full px-3 py-2 border border-gray-300 rounded-md' required />
+                <input type='date' min={today} onChange={(e) => setDates(e.target.value)} value={dates} className='w-full px-3 py-2 border border-gray-300 rounded-md' required />
               </div>
               <div className='flex flex-col'>
                 <label className='font-medium text-gray-700 mb-2'>Time</label>
-                <input type='time' onChange={(e) => setTime(e.target.value)} value={time} className='w-full px-3 py-2 border border-gray-300 rounded-md' required />
+                <select onChange={(e) => setTime(e.target.value)} value={time} className='w-full px-3 py-2 border border-gray-300 rounded-md' required>
+                  <option value="" disabled>Select a time</option>
+                  {validTimeSlots.filter(slot => dates !== today || slot >= minTime).map((slot, index) => (
+                    <option key={index} value={slot}>{slot}</option>
+                  ))}
+                </select>
               </div>
               <div className='flex flex-col'>
-                <label className='font-medium text-gray-700 mb-2'>Layanan</label>
+                <label className='font-medium text-gray-700 mb-2'>Service</label>
                 <select onChange={handleSelectedService} value={selectedService || ''} className='w-full px-3 py-2 border border-gray-300 rounded-md'>
                   <option value="" disabled>Select your option</option>
                   {serviceName.map((order, index) => (
                     <option key={index}>{order}</option>
                   ))}
                 </select>
-                {treatmentDescription && <span className='my-2 text-gray-700'>Keterangan: {treatmentDescription}</span>}
-                <label className='font-medium text-gray-700 mb-2'>Durasi</label>
+                {treatmentDescription && <span className='my-2 text-gray-700'>Description: {treatmentDescription}</span>}
+                <label className='font-medium text-gray-700 mb-2'>Duration</label>
                 <select onChange={handleDurationChange} value={selectedServiceDuration || 0} className='w-full px-3 py-2 border border-gray-300 rounded-md'>
                   <option value="" disabled>Select your option</option>
                   {serviceDuration.map((order, index) => (
-                    <option key={index} value={order.service_duration}>{order.service_duration}</option>
+                    <option key={index} value={order.service_duration}>{order.service_duration} minutes</option>
                   ))}
                 </select>
                 {finalService.length > 0 && finalService[0]?.service_price && (
-                  <span className='text-gray-700'>Harga : Rp.{formatPrice(finalService[0].service_price)},-</span>
+                  <span className='text-gray-700'>Price: Rp.{formatPrice(finalService[0].service_price)},-</span>
                 )}
               </div>
             </div>

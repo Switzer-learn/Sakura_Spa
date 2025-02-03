@@ -1,13 +1,26 @@
 import { useState } from "react";
 import { FaUser, FaLock } from "react-icons/fa";
+import {api} from '../../services/api'
 
 const LoginPage = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Logging in with:", { username, password });
+    console.log("Logging in with:", { email, password });
+    const formData = {
+      email:email,
+      password:password
+    }
+    const response = await api.login(formData);
+    if(response.status===200){
+      alert('Login Successfull');
+      console.log(response.user);
+    }else{
+      alert('Login failed')
+      console.log(response.message);
+    }
   };
 
   return (
@@ -23,10 +36,10 @@ const LoginPage = () => {
             <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Username"
+              placeholder="Email"
               className="w-full px-10 py-3 text-gray-800 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:border-indigo-400 outline-none"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>

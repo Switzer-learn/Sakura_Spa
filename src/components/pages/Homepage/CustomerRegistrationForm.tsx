@@ -1,27 +1,16 @@
 import React, { useState } from 'react';
-import {api} from '../../../services/api'
-
-// Define the type for the form data
-interface CustomerFormData {
-  name: string;
-  username: string;
-  password: string;
-  phoneNumber: string;
-}
+import { api } from '../../../services/api';
 
 const CustomerRegistration: React.FC = () => {
-  // State to manage form data
-  const [formData, setFormData] = useState<CustomerFormData>({
-    name: '',
-    username: '',
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
     password: '',
     phoneNumber: '',
   });
 
-  // State to handle form submission status
   const [submissionStatus, setSubmissionStatus] = useState<string | null>(null);
 
-  // Handle input changes
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({
@@ -30,27 +19,28 @@ const CustomerRegistration: React.FC = () => {
     });
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
-    if (!formData.name || !formData.username || !formData.password || !formData.phoneNumber) {
+    if (!formData.fullName || !formData.email || !formData.password || !formData.phoneNumber) {
       setSubmissionStatus('All fields are required.');
       return;
     }
 
+    const phonePattern = /^08\d{7,13}$/;
+    if (!phonePattern.test(formData.phoneNumber)) {
+      setSubmissionStatus('Invalid phone number. Must start with 08 and be 8-14 digits long.');
+      return;
+    }
+
     try {
-      // Replace with your backend API endpoint
-      const response = await api.addCustomer(formData);
-      if(response.status===200){
-        setSubmissionStatus('Registration successfull')
-      }else if(response.status==='23505'){
-        console.log(response.message);
-        setSubmissionStatus('Username already used, try another.');
-      }else{
-        console.log(response.message);
-        setSubmissionStatus('Failed to register customer, Please try again.');
+      const response = await api.customerRegister(formData);
+      if (response.status === 200) {
+        setSubmissionStatus('Registration successful, please check your email and confirm your registration');
+      } else if (response.status === '23505') {
+        setSubmissionStatus('User already exist, go to login page.');
+      } else {
+        setSubmissionStatus('Failed to register. Please try again.');
       }
     } catch (error) {
       setSubmissionStatus('An error occurred. Please try again.');
@@ -59,43 +49,38 @@ const CustomerRegistration: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-bold mb-6 text-center">Customer Registration</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="max-w-lg mx-auto my-auto p-8 bg-white shadow-lg rounded-lg border border-gray-200 md:max-w-md lg:max-w-xl">
+      <img src='./Sakura_Spa_Logo.png' alt='logo' className='size-40 mx-auto my-2' />
+      <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Customer Registration</h2>
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-            Name:
-          </label>
+          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name:</label>
           <input
             type="text"
-            id="name"
-            name="name"
-            value={formData.name}
+            id="fullName"
+            name="fullName"
+            value={formData.fullName}
             onChange={handleInputChange}
             required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-            Username:
-          </label>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email:</label>
           <input
-            type="text"
-            id="username"
-            name="username"
-            value={formData.username}
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
             onChange={handleInputChange}
             required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-            Password:
-          </label>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password:</label>
           <input
             type="password"
             id="password"
@@ -103,14 +88,12 @@ const CustomerRegistration: React.FC = () => {
             value={formData.password}
             onChange={handleInputChange}
             required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
         <div>
-          <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">
-            Phone Number:
-          </label>
+          <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">Phone Number:</label>
           <input
             type="tel"
             id="phoneNumber"
@@ -118,13 +101,15 @@ const CustomerRegistration: React.FC = () => {
             value={formData.phoneNumber}
             onChange={handleInputChange}
             required
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            pattern="08\d{7,13}"
+            title="Phone number must start with 08 and be 8-14 digits long."
+            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="w-full bg-blue-600 text-white py-3 rounded-lg text-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200"
         >
           Register
         </button>
