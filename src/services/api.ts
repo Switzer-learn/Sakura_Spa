@@ -300,8 +300,19 @@ getCurrentUser: async () => {
       return {status:200,message:'Therapist assigned'}
   },
 
-  processPayment:async(data:any)=>{
-    console.log(data);
+  processPayment:async(input:any)=>{
+    console.log(input);
+    const {transaction_id,paid,payment_method} = input;
+    const {data,error} = await supabase
+      .from('transactions')
+      .update({
+        paid :paid,
+        payment_method : payment_method
+      })
+      .eq('transaction_id',transaction_id);
+      if(error){
+        return {status:500,message:error}
+      }
     return {status:200, message:data}
   }
 };
