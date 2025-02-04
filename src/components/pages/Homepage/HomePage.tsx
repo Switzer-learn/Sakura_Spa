@@ -1,16 +1,17 @@
-import Header from "../../layout/HomePage/Header";
-import Hero from "../../layout/HomePage/Hero";
-import AboutUs from "../../layout/HomePage/AboutUs";
+import * as Components from '../../../components'
 
 const HomePage=()=>{
     return(
         <>
           <div id="Hero" className="bg-[url('./assets/images/hero_section.webp')] h-screen bg-cover text-white">
-            <Header />
-            <Hero />
+            <Components.Header />
+            <Components.Hero />
           </div>
           <div id="aboutUs" className="bg-[url('./assets/images/about_us.webp')] h-screen bg-cover bg-center text-gray-700">
-            <AboutUs />
+            <Components.AboutUs />
+          </div>
+          <div className="h-screen">
+            <Components.ServiceSection />
           </div>
         </>
     )

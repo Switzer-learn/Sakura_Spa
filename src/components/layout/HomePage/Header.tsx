@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Header = () => {
   return (
     <header className="px-4 flex justify-between text-center py-2 ">
@@ -6,14 +8,14 @@ const Header = () => {
         <span className="text-2xl font-bold py-1">Sakura Spa</span>
       </div>
       <div className="flex align-middle gap-4">
-        <button>Home</button>
-        <button>About Us</button>
+        <Link to='/'>Home</Link>
+        <a href='#aboutUs'>About Us</a>
         <button>Our Service</button>
         <button>Contact Us</button>
       </div>
       <div className="flex align-middle gap-3">
-        <button className="rounded border bg-blue-500 hover:bg-blue-600 px-3 py-2">Login</button>
-        <button className="rounded border px-3 py-2">Register</button>
+        <Link to='/Login' className="rounded border bg-blue-500 hover:bg-blue-600 px-3 py-2">Login</Link>
+        <Link to='/Register' className="rounded border px-3 py-2">Register</Link>
       </div>
     </header>
   );

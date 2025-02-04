@@ -118,6 +118,8 @@ const CashierPage = () => {
             onEdit={handleEdit}
             onPayment={() => handlePayment(transaction)}
             paid={transaction.paid}
+            amount={transaction.amount}
+            paymentMethod={transaction.payment_method}
             key={transaction.transaction_id}
             id={transaction.transaction_id}
           />

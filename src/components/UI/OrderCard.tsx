@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api';
+import { downloadInvoice } from '../../utils/InvoicePDF';
 
 type TransactionCardProps = {
   customerName: string;
   schedule: string; // Format: "YYYY-MM-DD HH:mm"
   service: string;
-  duration: string; // e.g., "60 minutes"
+  duration: number; // e.g., "60 minutes"
   therapistName: string | null; // Therapist may be null
   paid: boolean;
   id: string;
-  onSelect: () => void;
+  amount: number;
+  paymentMethod: string | null;
   onPayment: () => void;
   onEdit: (changedData: { therapist_id: string, transaction_id: string }) => void;
 };
@@ -21,16 +23,15 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
   duration,
   therapistName,
   paid,
+  amount,
+  paymentMethod,
   id,
-  onSelect,
   onPayment,
   onEdit,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [therapistOptions, setTherapistOptions] = useState<any[]>([]);
   const [selectedTherapist, setSelectedTherapist] = useState<string | null>(therapistName);
-  const [currentTherapist, setCurrentTherapist] = useState<string | null>(therapistName);
-  const [currentPaidStatus, setCurrentPaidStatus] = useState(paid);
 
   // Fetch therapist options
   useEffect(() => {
@@ -41,14 +42,6 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
 
     fetchTherapists();
   }, []);
-
-  // Handle therapist update and payment status
-  useEffect(() => {
-    if (therapistName !== currentTherapist || paid !== currentPaidStatus) {
-      setCurrentTherapist(therapistName);
-      setCurrentPaidStatus(paid);
-    }
-  }, [therapistName, paid]);
 
   const handleSave = () => {
     if (selectedTherapist) {
@@ -64,25 +57,47 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
   };
 
   const getCardColor = () => {
-    if (!currentTherapist) {
+    if (!therapistName) {
       return 'bg-red-200'; // Light red if no therapist assigned
-    } else if (!currentPaidStatus) {
+    } else if (!paid) {
       return 'bg-yellow-200'; // Yellow if not paid
     } else {
       return 'bg-green-200'; // Green if paid and therapist is assigned
     }
   };
 
+  const handleDownloadInvoice = () => {
+    console.log('clicked');
+    const transaction = {
+      transaction_id: id,
+      customer_name: customerName,
+      service_name: service,
+      service_price: amount,
+      service_duration: duration,
+      payment_method: paymentMethod || 'N/A',
+    };
+    downloadInvoice(transaction);
+  };
+
   return (
     <div className={`${getCardColor()} shadow-md rounded-2xl p-4 w-full max-w-md mx-auto border m-2`}>
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">{customerName}</h3>
-        <button
-          onClick={onSelect}
-          className="text-blue-500 text-sm underline focus:outline-none"
-        >
-          Select
-        </button>
+        {paid === true && (
+          <div className="relative group">
+            <button
+              onClick={handleDownloadInvoice}
+              className="text-blue-500 text-sm underline focus:outline-none"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="20" height="20" viewBox="0 0 50 50">
+                <path d="M 7 2 L 7 48 L 43 48 L 43 14.59375 L 42.71875 14.28125 L 30.71875 2.28125 L 30.40625 2 Z M 9 4 L 29 4 L 29 16 L 41 16 L 41 46 L 9 46 Z M 31 5.4375 L 39.5625 14 L 31 14 Z M 15 22 L 15 24 L 35 24 L 35 22 Z M 15 28 L 15 30 L 31 30 L 31 28 Z M 15 34 L 15 36 L 35 36 L 35 34 Z"></path>
+              </svg>
+            </button>
+            <span className="absolute left-1/2 transform -translate-x-1/2 -top-8 bg-gray-800 text-white text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
+              Download Invoice
+            </span>
+          </div>
+        )}
       </div>
       <p className="text-sm text-gray-600 mt-1">
         <span className="font-semibold">Schedule:</span> {schedule}
@@ -94,7 +109,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
         <span className="font-semibold">Duration:</span> {duration}
       </p>
       <p className="text-sm text-gray-600 mt-1">
-        <span className="font-semibold">Therapist:</span> {currentTherapist || 'Not assigned'}
+        <span className="font-semibold">Therapist:</span> {therapistName || 'Not assigned'}
       </p>
       <p className="text-sm text-gray-600 mt-1">
         <span className="font-semibold">Paid:</span> {paid ? 'Sudah Bayar' : 'Belum Bayar'}

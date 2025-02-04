@@ -2,7 +2,8 @@ import { useState } from "react";
 import { FaUser, FaLock } from "react-icons/fa";
 import {api} from '../../services/api'
 
-const LoginPage = () => {
+
+const LoginPage = ({staffLogin}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
