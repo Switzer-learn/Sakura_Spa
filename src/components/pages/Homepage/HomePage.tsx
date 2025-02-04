@@ -7,7 +7,7 @@ const HomePage=()=>{
             <Components.Header />
             <Components.Hero />
           </div>
-          <div id="aboutUs" className="bg-[url('./assets/images/about_us.webp')] h-screen bg-cover bg-center text-gray-700">
+          <div id="aboutUs" className="bg-gray-200">
             <Components.AboutUs />
           </div>
           <div className="h-screen">

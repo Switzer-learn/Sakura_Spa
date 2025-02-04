@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import * as Components from '../../../components';
 import { api } from '../../../services/api';
+import { useNavigate } from 'react-router-dom'
 
 const CustomerOrderForm: React.FC = () => {
   const [dates, setDates] = useState('');
@@ -17,6 +18,7 @@ const CustomerOrderForm: React.FC = () => {
   const [treatmentDescription, setTreatmentDescription] = useState<string>('');
   const [finalService, setFinalService] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -36,6 +38,8 @@ const CustomerOrderForm: React.FC = () => {
           setPhoneNumber(customerData.phone_number);
           setLoading(false);
         }
+      }else{
+        navigate('/Login')
       }
     }
     fetchCurrentUser();
@@ -91,9 +95,10 @@ const CustomerOrderForm: React.FC = () => {
     const response = await api.addOrders(formData);
     console.log(response);
     if (response.status === 200) {
-      alert('Scheduling berhasil');
+      alert('Scheduling berhasil, Terima Kasih, kami tunggu kedatangan anda');
+      navigate('/');
     } else {
-      alert('Ada yang gagal');
+      alert('Scheduling gagal, coba lagi atau hubungi kami melalui whatsapp');
       console.log(response);
     }
   }
@@ -126,9 +131,11 @@ const CustomerOrderForm: React.FC = () => {
   }
 
   return (
+    <div className='w-screen bg-green-700'>
+    <Components.Header />
     <div id='customerOrderForm' className='flex flex-col items-center p-4'>
-      <h1 className='text-3xl font-bold text-blue-700 mb-6 text-center'>Customer Scheduling Form</h1>
       <form className='w-full max-w-3xl bg-white shadow-lg rounded-lg p-6' onSubmit={handleSubmit}>
+      <h1 className='text-3xl font-bold text-green-700 mb-6 text-center'>Customer Scheduling Form</h1>
         <div className='flex flex-col sm:flex-row gap-6'>
           <div className='w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4'>
             <span className='text-xl font-semibold mb-4 text-gray-700'>Personal Information</span>
@@ -181,7 +188,9 @@ const CustomerOrderForm: React.FC = () => {
         </button>
       </form>
     </div>
+    </div>
   );
+  
 };
 
 export default CustomerOrderForm;

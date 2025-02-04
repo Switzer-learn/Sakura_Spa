@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { api } from '../../../services/api';
+import { useNavigate } from 'react-router-dom'
+import * as Components from '../../../components'
 
 const CustomerRegistration: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -8,6 +10,18 @@ const CustomerRegistration: React.FC = () => {
     password: '',
     phoneNumber: '',
   });
+
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    const fetchCurrentUser = async ()=>{
+      const currentUser = await api.getCurrentUser();
+      if(currentUser){
+        navigate('/Booking');
+      }
+    }
+    fetchCurrentUser();
+  },[])
 
   const [submissionStatus, setSubmissionStatus] = useState<string | null>(null);
 
@@ -49,6 +63,8 @@ const CustomerRegistration: React.FC = () => {
   };
 
   return (
+    <div className='bg-green-700 w-screen text-white'>
+    <Components.Header />
     <div className="max-w-lg mx-auto my-auto p-8 bg-white shadow-lg rounded-lg border border-gray-200 md:max-w-md lg:max-w-xl">
       <img src='./Sakura_Spa_Logo.png' alt='logo' className='size-40 mx-auto my-2' />
       <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Customer Registration</h2>
@@ -118,6 +134,7 @@ const CustomerRegistration: React.FC = () => {
       {submissionStatus && (
         <p className="mt-4 text-center text-sm text-gray-600">{submissionStatus}</p>
       )}
+    </div>
     </div>
   );
 };

@@ -1,11 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaUser, FaLock } from "react-icons/fa";
 import {api} from '../../services/api'
-
+import { useNavigate } from 'react-router-dom'
+import * as Components from '../../components'
 
 const LoginPage = ({staffLogin}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+  useEffect(()=>{
+    async function fetchCurrentUser(){
+      const user=await api.getCurrentUser();
+      if(user){
+        navigate('/Booking')
+      }
+    }
+    fetchCurrentUser();
+  },[])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +29,7 @@ const LoginPage = ({staffLogin}) => {
     const response = await api.login(formData);
     if(response.status===200){
       alert('Login Successfull');
-      console.log(response.user);
+      navigate('/Booking')
     }else{
       alert('Login failed')
       console.log(response.message);
@@ -25,7 +37,9 @@ const LoginPage = ({staffLogin}) => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-700 to-green-500">
+    <div className='text-white bg-gradient-to-br from-green-700 to-green-500'>
+    <Components.Header />
+    <div className="flex items-center justify-center min-h-screen ">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-lg">
         <img src='./Sakura_Spa_Logo.png' className='size-40 mx-auto' alt='logo' />
         <h2 className="text-3xl font-extrabold text-center text-gray-800">Welcome Back</h2>
@@ -77,11 +91,13 @@ const LoginPage = ({staffLogin}) => {
 
         {/* Signup Link */}
         <p className="text-center text-gray-500">
-          Don't have an account? <a href="#" className="text-indigo-600 hover:underline">Sign up</a>
+          Don't have an account? <a href="/Register" className="text-indigo-600 hover:underline">Sign up</a>
         </p>
       </div>
     </div>
+    </div>
   );
+  
 };
 
 export default LoginPage;

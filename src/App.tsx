@@ -20,6 +20,10 @@ const App: React.FC = () => {
             element={<Components.CustomerRegistrationForm />}
           />
           <Route
+            path="/Booking"
+            element={<Components.CustomerOrderForm />}
+          />
+          <Route
             path="/employee"
             element={<Components.LoginPage staffLogin='true' />}
           />
