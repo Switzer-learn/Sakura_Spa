@@ -57,15 +57,10 @@ CREATE TABLE transactions (
     duration NUMERIC CHECK (duration > 0),
     therapist_id INT REFERENCES employees(employee_id) ON DELETE SET NULL, -- Keeps transaction even if therapist leaves
     paid BOOLEAN DEFAULT FALSE,
-    amount NUMERIC(10, 2) CHECK (amount >= 0) DEFAULT 0 -- Ensures non-negative amount
+    amount NUMERIC(10, 2) CHECK (amount >= 0) DEFAULT 0, -- Ensures non-negative amount
+    payment_method TEXT
 );
 
--- Enable Row-Level Security (Supabase Best Practice)
-ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE employees ENABLE ROW LEVEL SECURITY;
-ALTER TABLE transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE services ENABLE ROW LEVEL SECURITY;
-ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;
 
 
 insert into services (service_name,service_duration,service_price,service_type,keterangan)
@@ -125,7 +120,8 @@ RETURNS TABLE (
     duration NUMERIC,
     therapist_name VARCHAR,
     paid BOOLEAN,
-    amount NUMERIC
+    amount NUMERIC,
+    payment_method text
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -137,7 +133,8 @@ BEGIN
         t.duration,
         e.full_name AS therapist_name,
         t.paid,
-        t.amount
+        t.amount,
+        t.payment_method
     FROM transactions t
     JOIN services s ON t.service_id = s.service_id
     JOIN customers c ON t.customer_id = c.auth_user_id

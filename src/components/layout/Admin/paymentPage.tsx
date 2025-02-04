@@ -1,5 +1,6 @@
 import React from "react";
 import * as Components from "../../../components";
+import {api} from '../../../services/api'
 
 interface PaymentPageProps {
   customer_name: string;
@@ -29,10 +30,17 @@ const PaymentPage: React.FC<PaymentPageProps> = ({
 }) => {
   const [paymentMethod, setPaymentMethod] = React.useState<string>("cash");
 
-  const handleConfirmPayment = () => {
+  const handleConfirmPayment = async () => {
     console.log("Payment confirmed with method:", paymentMethod);
     console.log(transaction_id)
     console.log(service_price)
+    const data = {
+      transaction_id : transaction_id,
+      paid : true,
+      payment_method : paymentMethod
+    }
+    const response = await api.processPayment(data)
+    console.log(response);
     onClose(); // Close modal after confirmation
   };
 

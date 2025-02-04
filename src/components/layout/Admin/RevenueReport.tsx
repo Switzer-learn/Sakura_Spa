@@ -23,7 +23,13 @@ const RevenueReport = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true); // Loading state
 
     const [rows, setRows] = useState<any[]>([]);
-
+    const paidStatus = (input:boolean) =>{
+        if(input===true){
+            return 'Sudah bayar'
+        }else{
+            return "Belum bayar"
+        }
+    }
     useEffect(() => {
         const fetchAllTransactions = async () => {
             setIsLoading(true); // Start loading
@@ -51,7 +57,8 @@ const RevenueReport = () => {
             ...data,
             id: data.id || index,
             Amount: formatPrice(data.Amount) || 0,
-        })));
+            paid: paidStatus(data.paid)
+    })));
         const total = transactionData.reduce((acc: number, transaction: { amount: number }) => acc + transaction.amount, 0);
         setGrandTotal(total);
     }, [transactionData]);
@@ -78,7 +85,8 @@ const RevenueReport = () => {
         { field: 'duration', headerName: 'Durasi', width: 200 },
         { field: 'therapist_name', headerName: 'Nama Therapist', width: 150 },
         { field: 'paid', headerName: 'Sudah Bayar', width: 100 },
-        { field: 'amount', headerName: 'Jumlah (IDR)', type: 'number', width: 100 }
+        { field: 'amount', headerName: 'Jumlah (IDR)', type: 'number', width: 100 },
+        { field: 'payment_method', headerName: 'Payment Method', width: 100 }
     ];
 
     const paginationModel = { page: 0, pageSize: 10 };

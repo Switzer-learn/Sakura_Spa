@@ -53,16 +53,16 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
   const handleSave = () => {
     if (selectedTherapist) {
       const data = {
-        therapist_id: selectedTherapist, // Ensure therapist_id is not null
+        therapist_id: selectedTherapist,
         transaction_id: id,
       };
-      onEdit(data); // Call onEdit with the correct data
-      setIsEditing(false); // Exit edit mode after saving
+      onEdit(data);
+      setIsEditing(false);
     } else {
-      // Handle the case where therapist_id is null, e.g., show an error message
       console.log("Therapist must be selected before saving.");
     }
   };
+
   const getCardColor = () => {
     if (!currentTherapist) {
       return 'bg-red-200'; // Light red if no therapist assigned
@@ -96,6 +96,9 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
       <p className="text-sm text-gray-600 mt-1">
         <span className="font-semibold">Therapist:</span> {currentTherapist || 'Not assigned'}
       </p>
+      <p className="text-sm text-gray-600 mt-1">
+        <span className="font-semibold">Paid:</span> {paid ? 'Sudah Bayar' : 'Belum Bayar'}
+      </p>
 
       {isEditing && (
         <div className="mt-4">
@@ -119,28 +122,32 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
       )}
 
       <div className="flex justify-end mt-4 gap-2">
-        {isEditing ? (
-          <button
-            onClick={handleSave}
-            className="bg-blue-500 text-white px-3 py-1 text-sm rounded-lg hover:bg-blue-600 focus:outline-none"
-          >
-            Save
-          </button>
-        ) : (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="bg-yellow-500 text-white px-3 py-1 text-sm rounded-lg hover:bg-yellow-600 focus:outline-none"
-          >
-            Edit
-          </button>
-        )}
+        {!paid && (
+          <>
+            {isEditing ? (
+              <button
+                onClick={handleSave}
+                className="bg-blue-500 text-white px-3 py-1 text-sm rounded-lg hover:bg-blue-600 focus:outline-none"
+              >
+                Save
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="bg-yellow-500 text-white px-3 py-1 text-sm rounded-lg hover:bg-yellow-600 focus:outline-none"
+              >
+                Edit
+              </button>
+            )}
 
-        <button
-          onClick={onPayment}
-          className="bg-green-500 text-white px-3 py-1 text-sm rounded-lg hover:bg-green-600 focus:outline-none"
-        >
-          Payment
-        </button>
+            <button
+              onClick={onPayment}
+              className="bg-green-500 text-white px-3 py-1 text-sm rounded-lg hover:bg-green-600 focus:outline-none"
+            >
+              Payment
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
