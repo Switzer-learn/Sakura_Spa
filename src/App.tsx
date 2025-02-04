@@ -1,34 +1,26 @@
-import React from "react";
-import * as Components from './components';
+import React, { Suspense, lazy } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
+
+// Lazy-loaded components
+const HomePage = lazy(() => import("./components/pages/Homepage/HomePage"));
+const LoginPage = lazy(() => import("./components/layout/LoginPage"));
+const CustomerRegistrationForm = lazy(() => import("./components/pages/Homepage/CustomerRegistrationForm"));
+const CustomerOrderForm = lazy(() => import("./components/pages/Homepage/CustomerOrderForm"));
+const AdminPage = lazy(() => import("./components/pages/Admin/AdminPage"));
 
 const App: React.FC = () => {
   return (
     <BrowserRouter>
-      <div>
+      <Suspense fallback={<div className="flex justify-center items-center h-screen">Loading...</div>}>
         <Routes>
-          <Route
-            path="/"
-            element={<Components.HomePage />}
-          />
-          <Route
-            path="/Login"
-            element={<Components.LoginPage staffLogin='false' />}
-          />
-          <Route
-            path="/Register"
-            element={<Components.CustomerRegistrationForm />}
-          />
-          <Route
-            path="/Booking"
-            element={<Components.CustomerOrderForm />}
-          />
-          <Route
-            path="/employee"
-            element={<Components.LoginPage staffLogin='true' />}
-          />
+          <Route path="/" element={<HomePage />} />
+          <Route path="/Login" element={<LoginPage staffLogin="false" />} />
+          <Route path="/Register" element={<CustomerRegistrationForm />} />
+          <Route path="/Booking" element={<CustomerOrderForm />} />
+          <Route path="/employee" element={<LoginPage staffLogin="true" />} />
+          <Route path="/AdminPage" element={<AdminPage />} />
         </Routes>
-      </div>
+      </Suspense>
     </BrowserRouter>
   );
 };

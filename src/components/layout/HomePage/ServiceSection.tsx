@@ -94,7 +94,7 @@ const ServiceSection = () => {
         </div>
       ))}
       <div className="flex justify-center mt-12">
-        <button className="bg-blue-600 text-green-700 px-6 py-3 rounded-lg text-lg font-bold hover:bg-blue-700 transition-all">
+        <button className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-blue-700 transition-all">
           Book Your Schedule Now
         </button>
       </div>

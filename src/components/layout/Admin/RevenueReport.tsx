@@ -82,7 +82,7 @@ const RevenueReport = () => {
         { field: 'customer_name', headerName: 'Nama Customer', width: 200 },
         { field: 'schedule', headerName: 'Schedule', width: 100 },
         { field: 'service_name', headerName: 'Service', width: 100 },
-        { field: 'duration', headerName: 'Durasi', width: 200 },
+        { field: 'duration', headerName: 'Durasi', width: 70 },
         { field: 'therapist_name', headerName: 'Nama Therapist', width: 150 },
         { field: 'paid', headerName: 'Sudah Bayar', width: 100 },
         { field: 'amount', headerName: 'Jumlah (IDR)', type: 'number', width: 100 },

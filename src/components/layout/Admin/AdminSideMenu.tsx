@@ -5,6 +5,7 @@ const AdminSideMenu = (props: any) => {
   const [inventoryOpen, setInventoryOpen] = useState(false);
   const [financeOpen, setFinanceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false); // For mobile responsiveness
+  const [serviceOpen, setServiceOpen] = useState(false);
 
   return (
     <div>
@@ -89,6 +90,30 @@ const AdminSideMenu = (props: any) => {
             <div>
               <button
                 className="w-full text-left py-2 px-4 hover:bg-green-700"
+                onClick={() => setServiceOpen(!serviceOpen)}
+              >
+                Service
+              </button>
+              {serviceOpen && (
+                <ul className="px-4 text-md font-normal flex flex-col">
+                  <button
+                    className="hover:text-lg text-start py-1 px-2"
+                    onClick={() => props.onMenuClick("addService")}
+                  >
+                    Add Service
+                  </button>
+                  <button
+                    className="hover:text-lg text-start py-1 px-2"
+                    onClick={() => props.onMenuClick("serviceList")}
+                  >
+                    Service List
+                  </button>
+                </ul>
+              )}
+            </div>
+            <div>
+              <button
+                className="w-full text-left py-2 px-4 hover:bg-green-700"
                 onClick={() => setFinanceOpen(!financeOpen)}
               >
                 Finance
@@ -128,14 +153,7 @@ const AdminSideMenu = (props: any) => {
                 Customer List
               </button>
             </div>
-            <div>
-              <button
-                className="w-full text-left py-2 px-4 hover:bg-green-700"
-                onClick={() => props.onMenuClick("testingLogin")}
-              >
-                Testing Login
-              </button>
-            </div>
+            
             <div>
               <button
                 className="w-full text-left py-2 px-4 hover:bg-green-700"
@@ -150,6 +168,14 @@ const AdminSideMenu = (props: any) => {
                 onClick={() => props.onMenuClick("testingCustomerOrder")}
               >
                 Testing Customer Order
+              </button>
+            </div>
+            <div>
+              <button
+                className="w-full text-left py-2 px-4 hover:bg-green-700"
+                onClick={() => console.log('log out')}
+              >
+                Logout
               </button>
             </div>
           </div>

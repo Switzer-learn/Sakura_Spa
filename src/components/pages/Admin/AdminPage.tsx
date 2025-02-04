@@ -1,53 +1,69 @@
-import React, { useState } from "react";
-import * as Component from "../../../components";
+import React, { useState, lazy, Suspense } from "react";
+import AdminSideMenu from '../../layout/Admin/AdminSideMenu';
+
+// Lazy load components
+const EmployeeRegistration = lazy(() => import("../../layout/Admin/EmployeeRegistration"));
+const EmployeeList = lazy(() => import("../../layout/Admin/EmployeeList"));
+const AddInventoryForm = lazy(() => import("../../layout/Admin/AddInventoryForm"));
+const InventoryList = lazy(() => import("../../layout/Admin/InventoryList"));
+const RevenueReport = lazy(() => import("../../layout/Admin/RevenueReport"));
+const CashierPage = lazy(() => import("../../layout/Admin/CashierPage"));
+const TherapistSchedule = lazy(() => import("../../layout/Admin/TherapistSchedule"));
+const LoginPage = lazy(() => import("../../layout/LoginPage"));
+const CustomerRegistrationForm = lazy(() => import("../../pages/Homepage/CustomerRegistrationForm"));
+const CustomerOrderForm = lazy(() => import("../../pages/Homepage/CustomerOrderForm"));
+const CustomerList = lazy(() => import("../../layout/Admin/CustomerList"));
+const ServiceList = lazy(()=> import("../../layout/Admin/ServiceList"))
 
 const AdminPage: React.FC = () => {
-  const [selectedMenu,setSelectedMenu] = useState('')
+  const [selectedMenu, setSelectedMenu] = useState("");
 
-  const handleSideMenuClick = (menu:string) =>{
+  const handleSideMenuClick = (menu: string) => {
     setSelectedMenu(menu);
-  }
+  };
 
-  const displayContent = () =>{
+  const displayContent = () => {
     switch (selectedMenu) {
       case "AddEmployee":
-        return <Component.EmployeeRegistration />
+        return <EmployeeRegistration />;
       case "EmployeeList":
-        return <Component.EmployeeList /> //need to be displayed with many employee
+        return <EmployeeList />;
       case "addInventory":
-        return <Component.AddInventoryForm />
+        return <AddInventoryForm />;
       case "inventoryList":
-        return <Component.InventoryList />
+        return <InventoryList />;
       case "revenueReport":
-        return <Component.RevenueReport />
+        return <RevenueReport />;
       case "cashier":
-        return <Component.CashierPage />
+        return <CashierPage />;
       case "schedule":
-        return <Component.TherapistSchedule />
-      case "testingLogin":
-        return <Component.LoginPage /> 
+        return <TherapistSchedule />;
+      case "serviceList":
+        return <ServiceList />;
       case "testingRegister":
-          return <Component.CustomerRegistrationForm /> 
+        return <CustomerRegistrationForm />;
       case "testingCustomerOrder":
-          return <Component.CustomerOrderForm /> 
+        return <CustomerOrderForm />;
       case "customerList":
-        return <Component.CustomerList />       // Add more cases as needed for other menu options
+        return <CustomerList />;
       default:
-        return <Component.CashierPage />
+        return <CashierPage />;
     }
-  }
+  };
+
   return (
-    <div className='flex'>
-      <div className='items-start'>
-        <Component.AdminSideMenu onMenuClick={handleSideMenuClick} />
+    <div className="flex">
+      <div className="items-start">
+        <AdminSideMenu onMenuClick={handleSideMenuClick} />
       </div>
-      <div className='bg-linear-to-r from-red-500 to-green-500 w-screen'>
-        <div className='mx-auto '>
-          {displayContent()}
+      <div className="bg-linear-to-r from-red-500 to-green-500 w-screen">
+        <div className="mx-auto">
+          <Suspense fallback={<div className="text-center p-5">Loading...</div>}>
+            {displayContent()}
+          </Suspense>
         </div>
       </div>
     </div>
-
   );
 };
 

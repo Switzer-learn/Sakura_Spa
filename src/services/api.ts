@@ -314,5 +314,9 @@ getCurrentUser: async () => {
         return {status:500,message:error}
       }
     return {status:200, message:data}
+  },
+
+  deleteService:async(input:any)=>{
+    console.log(input);
   }
 };
