@@ -97,7 +97,7 @@ const ServiceSection: React.FC = () => {
         <div key={index} className="mb-8">
           <button
             onClick={() => toggleService(index)}
-            className="w-full rounded-xl h-48 px-5 flex items-end bg-cover bg-center bg-gray-300"
+            className="w-full rounded-xl h-48 px-5 flex items-end bg-cover bg-center"
             style={{ backgroundImage: getImageUrl(index) }}
             aria-label={service.service_type}
           >
