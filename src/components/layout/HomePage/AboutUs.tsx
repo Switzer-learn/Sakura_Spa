@@ -2,7 +2,7 @@ import React from 'react';
 
 const AboutUs: React.FC = () => {
   return (
-    <section className="py-16 px-4 md:px-8 bg-[url('./assets/images/about_us.webp')] h-screen bg-cover bg-center text-gray-700">
+    <section className="py-16 px-4 md:px-8 bg-[url('/assets/images/about_us.webp')] h-screen bg-cover bg-center text-gray-700">
       <h2 className="text-3xl font-semibold text-gray-800 shadow-sm text-center mb-6 underline">
         About Us
       </h2>

@@ -81,7 +81,7 @@ const ServiceSection: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <img src="./Sakura_Spa_Logo.png" alt="Loading..." className="w-32 h-32 animate-pulse" />
+        <img src="/Sakura_Spa_Logo.png" alt="Loading..." className="w-32 h-32 animate-pulse" />
       </div>
     );
   }

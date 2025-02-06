@@ -8,7 +8,7 @@ const ServiceSection = lazy(() => import('../../layout/HomePage/ServiceSection')
 const HomePage = () => {
     return (
         <>
-            <div id="Hero" className="bg-[url('./assets/images/hero_section.webp')] h-screen bg-cover text-white">
+            <div id="Hero" className="bg-[url('/assets/images/hero_section.webp')] h-screen bg-cover text-white">
                 <Suspense fallback={<div>Loading Header...</div>}>
                     <Header />
                 </Suspense>
