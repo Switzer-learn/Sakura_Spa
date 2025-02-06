@@ -77,7 +77,7 @@ const ServiceSection: React.FC = () => {
     setActiveIndex(prevIndex => (prevIndex === index ? null : index));
   };
 
-  const getImageUrl = (n: number) => `url('/assets/images/${n}.jpg')`;
+  const getImageUrl = (n: number) => `/assets/images/${n}.jpg`;
 
   if (loading) {
     return (
