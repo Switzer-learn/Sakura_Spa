@@ -1,9 +1,10 @@
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
+import LoginPage from "./components/layout/LoginPage"
 
 // Lazy-loaded components
 const HomePage = lazy(() => import("./components/pages/Homepage/HomePage"));
-const LoginPage = lazy(() => import("./components/layout/LoginPage"));
+//const LoginPage = lazy(() => import("./components/layout/LoginPage"));
 const CustomerRegistrationForm = lazy(() => import("./components/pages/Homepage/CustomerRegistrationForm"));
 const CustomerOrderForm = lazy(() => import("./components/pages/Homepage/CustomerOrderForm"));
 const AdminPage = lazy(() => import("./components/pages/Admin/AdminPage"));
@@ -23,7 +24,6 @@ const App: React.FC = () => {
           <Route path="/employee" element={<LoginPage staffLogin={true} />} />
           <Route path="/AdminPage" element={<AdminPage />} />
           <Route path="/AdminRegister" element={<EmployeeRegistrationForm adminLogin={true} />} />
-          <Route path="/testing" element={<InventoryList />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
