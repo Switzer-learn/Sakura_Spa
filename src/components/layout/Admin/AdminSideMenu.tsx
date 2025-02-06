@@ -40,7 +40,7 @@ const AdminSideMenu = (props: any) => {
         {/* Logo Section */}
         <div className="flex flex-col justify-center align-middle my-5">
           <img
-            src="./Sakura_Spa_Logo.png"
+            src="/Sakura_Spa_Logo.png"
             alt="sakura spa logo"
             className="w-28 h-28 self-center rounded-full border-2 border-white"
           />

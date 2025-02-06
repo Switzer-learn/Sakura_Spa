@@ -97,7 +97,7 @@ const RevenueReport = () => {
 
             {isLoading ? (
                 <div className="flex justify-center items-center h-full">
-                    <img src='./Sakura_Spa_Logo.png' className='animate-pulse size-52 flex my-auto mx-auto' />
+                    <img src='/Sakura_Spa_Logo.png' className='animate-pulse size-52 flex my-auto mx-auto' />
                 </div>
             ) : (
                 <div>

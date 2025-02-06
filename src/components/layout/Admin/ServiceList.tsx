@@ -185,7 +185,7 @@ export default function ServiceList() {
         {loading ? (
           <div className="flex justify-center align-middle h-screen">
             <img
-              src="./Sakura_Spa_Logo.png"
+              src="/Sakura_Spa_Logo.png"
               className="animate-pulse size-52 flex my-auto mx-auto"
             />
           </div>

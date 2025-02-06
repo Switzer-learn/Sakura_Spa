@@ -107,7 +107,7 @@ export default function InventoryList() {
       <Paper sx={{ height: 500, width: "100%", padding: 2, boxShadow: 3 }}>
         {loading ? (
           <div className="flex justify-center align-middle h-screen">
-            <img src="./Sakura_Spa_Logo.png" className="animate-pulse size-52 flex my-auto mx-auto" />
+            <img src="/Sakura_Spa_Logo.png" className="animate-pulse size-52 flex my-auto mx-auto" />
           </div>
         ) : (
           <DataGrid
