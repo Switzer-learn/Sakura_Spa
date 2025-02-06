@@ -10,8 +10,6 @@ const CustomerOrderForm = lazy(() => import("./components/pages/Homepage/Custome
 const AdminPage = lazy(() => import("./components/pages/Admin/AdminPage"));
 const EmployeeRegistrationForm = lazy(()=> import("./components/layout/Admin/EmployeeRegistration"))
 
-const InventoryList = lazy(()=> import("./components/layout/Admin/InventoryList"))
-
 const App: React.FC = () => {
   return (
     <BrowserRouter>
