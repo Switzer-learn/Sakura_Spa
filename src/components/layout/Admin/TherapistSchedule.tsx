@@ -33,7 +33,7 @@ const TherapistSchedule = () => {
         }
 
         if (transactions) {
-          const filteredTransactions = transactions.filter((transaction) =>
+          const filteredTransactions = transactions.filter((transaction:any) =>
             transaction.schedule.slice(0, 10) === selectedDate
           );
 

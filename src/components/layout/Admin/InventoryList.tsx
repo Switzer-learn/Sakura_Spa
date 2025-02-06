@@ -8,8 +8,6 @@ import supabase from "../../../utils/supabase";
 export default function InventoryList() {
   const [loading, setLoading] = useState(true);
   const [rows, setRows] = useState<any[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<any | null>(null);
 
   useEffect(() => {
     fetchInventory();
@@ -75,19 +73,6 @@ export default function InventoryList() {
       } catch (error) {
         console.error("Failed to delete inventory item:", error);
       }
-    }
-  };
-
-  const handleSave = async (itemData: any) => {
-    try {
-      if (itemData.inventory_id === 0) {
-        await api.addInventory(itemData);
-      } else {
-        await api.updateInventory(itemData);
-      }
-      setModalOpen(false);
-    } catch (error) {
-      console.error("Error saving inventory item:", error);
     }
   };
 

@@ -71,6 +71,9 @@ const CashierPage = () => {
   const handleEdit = async (input: any) => {
     try {
       const response = await api.setTherapist(input);
+      if(response.status===200){
+        console.log(response.message)
+      }
       const updatedTransactions = await api.getTransactions();
       setTransactionsData(updatedTransactions || []);
     } catch (error) {

@@ -3,8 +3,31 @@ import { motion } from 'framer-motion';
 import ServiceCard from '../../UI/ServiceCard';
 import { api } from '../../../services/api';
 
-const ServiceSection = () => {
-  const [services, setServices] = useState<any[]>([]);
+// Define an interface for a single service record from the API.
+interface ServiceItem {
+  service_type: string;
+  service_name: string;
+  service_duration: number;
+  service_price: number;
+  keterangan: string;
+}
+
+// Define an interface for a service group (for each unique service name).
+interface ServiceGroup {
+  service_name: string;
+  service_duration: number[];
+  service_price: number;
+  description: string;
+}
+
+// Define an interface for grouped services (by service_type).
+interface GroupedService {
+  service_type: string;
+  data: ServiceGroup[];
+}
+
+const ServiceSection: React.FC = () => {
+  const [services, setServices] = useState<GroupedService[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
@@ -12,33 +35,37 @@ const ServiceSection = () => {
     const fetchServices = async () => {
       try {
         const response = await api.getServices();
-        if (response) {
-          const groupedServices = response.reduce((acc, service) => {
-            let serviceTypeGroup = acc.find(group => group.service_type === service.service_type);
-            if (!serviceTypeGroup) {
-              serviceTypeGroup = { service_type: service.service_type, data: [] };
-              acc.push(serviceTypeGroup);
-            }
-            let serviceGroup = serviceTypeGroup.data.find(item => item.service_name === service.service_name);
-            if (!serviceGroup) {
-              serviceGroup = {
-                service_name: service.service_name,
-                service_duration: [],
-                service_price: service.service_price,
-                description: service.keterangan
-              };
-              serviceTypeGroup.data.push(serviceGroup);
-            }
-            if (!serviceGroup.service_duration.includes(service.service_duration)) {
-              serviceGroup.service_duration.push(service.service_duration);
-            }
-            return acc;
-          }, []);
-          setServices(groupedServices);
-        }
+        // Assume response is an array of ServiceItem
+        const serviceItems = response as ServiceItem[];
+        const groupedServices = serviceItems.reduce((acc: GroupedService[], service: ServiceItem) => {
+          // Find if there is already a group for the current service_type
+          let serviceTypeGroup = acc.find((group: GroupedService) => group.service_type === service.service_type);
+          if (!serviceTypeGroup) {
+            serviceTypeGroup = { service_type: service.service_type, data: [] };
+            acc.push(serviceTypeGroup);
+          }
+          // Check if this service_name exists in the group
+          let serviceGroup = serviceTypeGroup.data.find((item: ServiceGroup) => item.service_name === service.service_name);
+          if (!serviceGroup) {
+            serviceGroup = {
+              service_name: service.service_name,
+              service_duration: [],
+              service_price: service.service_price,
+              description: service.keterangan,
+            };
+            serviceTypeGroup.data.push(serviceGroup);
+          }
+          // Add the duration if it doesn't exist already
+          if (!serviceGroup.service_duration.includes(service.service_duration)) {
+            serviceGroup.service_duration.push(service.service_duration);
+          }
+          return acc;
+        }, [] as GroupedService[]);
+        setServices(groupedServices);
       } catch (error) {
         console.error('Error fetching services:', error);
       } finally {
+        // Using a timeout to simulate loading delay
         setTimeout(() => setLoading(false), 1000);
       }
     };
@@ -60,9 +87,12 @@ const ServiceSection = () => {
   }
 
   return (
-    <section className="bg-gray-100 mt-28 lg:mt-0 lg:py-16 px-8 bg-gradient-to-br from-green-700 to-green-500" id='serviceSection'>
+    <section
+      className="bg-gray-100 mt-28 lg:mt-0 lg:py-16 px-8 bg-gradient-to-br from-green-700 to-green-500"
+      id="serviceSection"
+    >
       <h2 className="text-3xl font-semibold text-center text-gray-100 mb-5 underline">Our Services</h2>
-      {services.map((service, index) => (
+      {services.map((service: GroupedService, index: number) => (
         <div key={index} className="mb-8">
           <button
             onClick={() => toggleService(index)}
@@ -81,7 +111,7 @@ const ServiceSection = () => {
             className="overflow-hidden"
           >
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {service.data.map((serviceItem, subIndex) => (
+              {service.data.map((serviceItem: ServiceGroup, subIndex: number) => (
                 <ServiceCard
                   key={subIndex}
                   title={serviceItem.service_name}

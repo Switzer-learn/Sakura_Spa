@@ -9,6 +9,8 @@ const CustomerOrderForm = lazy(() => import("./components/pages/Homepage/Custome
 const AdminPage = lazy(() => import("./components/pages/Admin/AdminPage"));
 const EmployeeRegistrationForm = lazy(()=> import("./components/layout/Admin/EmployeeRegistration"))
 
+const InventoryList = lazy(()=> import("./components/layout/Admin/InventoryList"))
+
 const App: React.FC = () => {
   return (
     <BrowserRouter>
@@ -21,6 +23,7 @@ const App: React.FC = () => {
           <Route path="/employee" element={<LoginPage staffLogin={true} />} />
           <Route path="/AdminPage" element={<AdminPage />} />
           <Route path="/AdminRegister" element={<EmployeeRegistrationForm adminLogin={true} />} />
+          <Route path="/testing" element={<InventoryList />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

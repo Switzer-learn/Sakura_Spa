@@ -2,7 +2,7 @@ import React from 'react';
 
 type ServiceCardProps = {
   title: string;
-  duration: [];
+  duration: number[];
   description: string;
 };
 
