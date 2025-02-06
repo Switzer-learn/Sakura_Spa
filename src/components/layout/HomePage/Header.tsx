@@ -18,13 +18,16 @@ const Header:React.FC<Header> = ({customerMode}) => {
         const currentUser = await api.getCurrentUser();
         // If no user is logged in, stop execution
         if (!currentUser) return;
-        const customer = await api.getSpecificCustomer(currentUser.id)
-        if(customer.status===200){
-          setUser(customer.data.customer_name);
-        }else{
-          console.log(customer)
-          return;
+        if(customerMode){
+          const customer = await api.getSpecificCustomer(currentUser.id)
+          if(customer.status===200){
+            setUser(customer.data.customer_name);
+          }else{
+            console.log(customer)
+            return;
+          }
         }
+        
       } catch (error) {
         console.log("Error fetching user:", error);
       }
