@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa"; // Import Font Awesome icons
-import { api } from "../../../services/api"; // Assuming you have an api.js file for your API calls
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom";
+import { FaBars, FaTimes } from "react-icons/fa";
+import { api } from "../../../services/api";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,26 +11,33 @@ const Header = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const currentUser = await api.getCurrentUser(); // API call to get current user
-        if (currentUser) {
+        const currentUser = await api.getCurrentUser();
+
+        // If no user is logged in, stop execution
+        if (!currentUser) return;
+
+        // If user is an admin, do nothing
+        if (currentUser.role === "admin") return;
+
+        // If user is a customer, fetch their data
+        if (currentUser.role === "customer") {
           const customerData = await api.getSpecificCustomer(currentUser.id);
           if (customerData) {
             setUser(customerData.data.customer_name);
           }
         }
-         // If user exists, set it in the state
       } catch (error) {
         console.log("Error fetching user:", error);
       }
     };
+
     fetchUser();
   }, []);
 
   const handleLogout = () => {
-    // Call the logout API here (or clear local storage/session)
     api.logout();
-    setUser(null); // Clear the user state
-    navigate('/');
+    setUser(null);
+    navigate("/");
   };
 
   return (
@@ -77,7 +83,7 @@ const Header = () => {
         className="md:hidden text-gray-800"
         aria-label="Toggle Menu"
       >
-        {isOpen ? <FaTimes size={28} /> : <FaBars size={28} />} {/* Replaced Lucide icons with Font Awesome */}
+        {isOpen ? <FaTimes size={28} /> : <FaBars size={28} />}
       </button>
 
       {/* Mobile Menu Dropdown */}

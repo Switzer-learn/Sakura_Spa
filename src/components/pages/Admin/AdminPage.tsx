@@ -62,7 +62,7 @@ const AdminPage: React.FC = () => {
       case "serviceList":
         return <ServiceList />;
       case "Walk-in Customer Order":
-        return <CustomerOrderForm walkIn={true}/>;
+        return <CustomerOrderForm walkIn={true} adminPage={true}/>;
       case "customerList":
         return <CustomerList />;
       default:

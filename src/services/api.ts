@@ -13,6 +13,14 @@ function todayDate(){
   return today;
 }
 
+function generateUserId(){
+  const date = new Date();
+  const month = date.getMonth()+1;
+  const randNum = Math.floor(Math.random()*1000)
+  let userId = 'WALKIN-'+date.getFullYear()+month+date.getDate()+randNum;
+  return userId;
+}
+
 function generateTransactionId(){
   const date = new Date();
   const month = date.getMonth()+1;
@@ -57,6 +65,25 @@ export const api = {
   }
   return { status: 200, message: "Registration successful", user: data.user };
 },
+
+ addWalkInCustomer:async(inputData:any)=>{
+  const {customer_name,phone_number,email} = inputData;
+  
+  const {data,error} = await supabase
+    .from('customers')
+    .insert({
+      auth_user_id:generateUserId(),
+      customer_name:customer_name,
+      phone_number:phone_number,
+      email:email
+    })
+    .select();
+
+    if(error){
+      return {status:500,message:error}
+    }
+    return {status:200,message:'walkIn customer insert successfull',data:data}
+ },
 
 // **LOGIN using Supabase Auth**
 login: async ({ email, password }: { email: string; password: string }) => { 

@@ -5,14 +5,16 @@ import { useNavigate } from "react-router-dom";
 
 interface CustomerOrderFormProps {
   walkIn: boolean;
+  adminPage: boolean;
 }
 
-const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn }) => {
+const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage }) => {
   const [dates, setDates] = useState("");
   const [time, setTime] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerId, setCustomerId] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState(""); // New email state for walkIn users
   const [originalServices, setOriginalServices] = useState<any[]>([]);
   const [serviceName, setServiceName] = useState<string[]>([]);
   const [serviceDuration, setServiceDuration] = useState<any[]>([]);
@@ -32,7 +34,6 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn }) => {
   };
 
   useEffect(() => {
-    // Optionally, if there is any logic specific for walkIn === false, you can add it here.
     async function fetchCurrentUser() {
       const response = await api.getCurrentUser();
       if (response) {
@@ -41,29 +42,27 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn }) => {
         if (customerData) {
           setCustomerName(customerData.data.customer_name);
           setPhoneNumber(customerData.data.phone_number);
-          setLoading(false);
+          // Optionally, if the non-walkIn user has an email, set it here.
+          // setEmail(customerData.data.email);
         }
       } else {
         navigate("/Login");
       }
     }
-    if(walkIn===false)
-    {
+    if (walkIn === false) {
       fetchCurrentUser();
     }
-    
-  }, [navigate]);
+    setLoading(false);
+  }, [navigate, walkIn]);
 
   useEffect(() => {
-    if(walkIn===false){
-        const fetchServicesData = async () => {
-        const response = await api.getServices();
-        const data: any = Array.from(new Set(response?.map((service) => service.service_name)));
-        setOriginalServices(response || []);
-        setServiceName(data || []);
-      };
-      fetchServicesData();
-    }
+    const fetchServicesData = async () => {
+      const response = await api.getServices();
+      const data: any = Array.from(new Set(response?.map((service) => service.service_name)));
+      setOriginalServices(response || []);
+      setServiceName(data || []);
+    };
+    fetchServicesData();
   }, []);
 
   useEffect(() => {
@@ -92,8 +91,30 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn }) => {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    let walkInCustomerId = 0;
+    if (walkIn) {
+      const customerData = {
+        customer_name: customerName,
+        phone_number: phoneNumber,
+        email: email // Include email when inserting a walk-in customer
+      };
+      const response = await api.addWalkInCustomer(customerData);
+      if (response.status !== 200) {
+        alert("Something is wrong");
+        console.log(response);
+        return; // Exit if there's an error
+      } else {
+        console.log(response)
+        if (response.data[0]?.auth_user_id) {
+          walkInCustomerId = response.data[0].auth_user_id;
+        } else {
+          alert("Failed to retrieve customer ID.");
+          return;
+        }
+      }
+    }
     const formData = {
-      customer_id: customerId,
+      customer_id: walkIn ? walkInCustomerId : customerId,
       customer_name: customerName,
       phone_number: phoneNumber,
       date: dates,
@@ -105,9 +126,16 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn }) => {
     console.log("Submitted Data:", formData);
     const response = await api.addOrders(formData);
     console.log(response);
+
     if (response.status === 200) {
-      alert("Scheduling berhasil, Terima Kasih, kami tunggu kedatangan anda");
-      navigate("/");
+      if(walkIn){
+        alert("Scheduling berhasil");
+        navigate("/AdminPage");
+      }else{
+        alert("Scheduling berhasil, Terima Kasih, kami tunggu kedatangan anda");
+        navigate("/");
+      }
+      
     } else {
       alert("Scheduling gagal, coba lagi atau hubungi kami melalui whatsapp");
       console.log(response);
@@ -140,7 +168,11 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn }) => {
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center h-screen">
-        <img src="./Sakura_Spa_Logo.png" className="animate-pulse size-52 flex my-auto mx-auto" alt="Loading" />
+        <img
+          src="./Sakura_Spa_Logo.png"
+          className="animate-pulse size-52 flex my-auto mx-auto"
+          alt="Loading"
+        />
         <span className="text-lg font-semibold text-gray-700">Loading...</span>
       </div>
     );
@@ -148,18 +180,17 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn }) => {
 
   return (
     <div className="w-screen bg-green-700">
-      <Components.Header />
-      <div id="customerOrderForm" className="flex flex-col items-center p-4">
+      {adminPage === false && <Components.Header />}
+      <div id="customerOrderForm" className="flex flex-col mx-auto h-screen bg-green-700 p-4">
         <form className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-6" onSubmit={handleSubmit}>
-          <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">Customer Scheduling Form</h1>
+          <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">
+            Customer Scheduling Form
+          </h1>
           <div className="flex flex-col sm:flex-row gap-6">
             <div className="w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4">
               <span className="text-xl font-semibold mb-4 text-gray-700">Personal Information</span>
               <div className="flex flex-col">
-                {/* 
-                  When walkIn is true: fields are enabled.
-                  When walkIn is false: disable the fields.
-                */}
+                {/* Fields for personal information */}
                 <Components.TextInput
                   id="fullName"
                   label="Full Name"
@@ -178,6 +209,16 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn }) => {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhoneNumber(e.target.value)}
                   disabled={!walkIn}
                 />
+                {walkIn && (
+                  <Components.TextInput
+                    id="email"
+                    label="Email"
+                    placeholder="Enter Email"
+                    type="email"
+                    value={email}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                  />
+                )}
               </div>
             </div>
             <div className="w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4">
@@ -225,16 +266,20 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn }) => {
                       Select your option
                     </option>
                     {serviceName.map((order, index) => (
-                      <option key={index}>{order}</option>
+                      <option key={index} value={order}>
+                        {order}
+                      </option>
                     ))}
                   </select>
                   {treatmentDescription && (
-                    <span className="my-2 text-gray-700">Description: {treatmentDescription}</span>
+                    <span className="my-2 text-gray-700">
+                      Description: {treatmentDescription}
+                    </span>
                   )}
                   <label className="font-medium text-gray-700 mb-2">Duration</label>
                   <select
                     onChange={handleDurationChange}
-                    value={selectedServiceDuration || 0}
+                    value={selectedServiceDuration || ""}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   >
                     <option value="" disabled>
