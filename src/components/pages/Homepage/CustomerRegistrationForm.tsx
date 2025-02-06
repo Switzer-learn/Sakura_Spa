@@ -79,7 +79,7 @@ const CustomerRegistration: React.FC = () => {
             value={formData.fullName}
             onChange={handleInputChange}
             required
-            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="text-gray-700 mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
@@ -92,7 +92,7 @@ const CustomerRegistration: React.FC = () => {
             value={formData.email}
             onChange={handleInputChange}
             required
-            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="text-gray-700 mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
@@ -105,7 +105,7 @@ const CustomerRegistration: React.FC = () => {
             value={formData.password}
             onChange={handleInputChange}
             required
-            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="text-gray-700 mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
@@ -120,7 +120,7 @@ const CustomerRegistration: React.FC = () => {
             required
             pattern="08\d{7,13}"
             title="Phone number must start with 08 and be 8-14 digits long."
-            className="mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            className="text-gray-700 mt-1 w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
