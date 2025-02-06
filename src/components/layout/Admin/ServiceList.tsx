@@ -22,7 +22,6 @@ export default function ServiceList() {
         "postgres_changes",
         { event: "*", schema: "public", table: "services" },
         (payload) => {
-          console.log("Change received!", payload);
           handleRealtimeChange(payload);
         }
       )
@@ -87,7 +86,6 @@ export default function ServiceList() {
   const handleDelete = async (id: number) => {
     if (confirm("Are you sure you want to delete this service?")) {
       try {
-        console.log(id);
         await api.deleteService(id);
       } catch (error) {
         console.error("Failed to delete service:", error);

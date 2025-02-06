@@ -9,7 +9,6 @@ function todayDate(){
     return result;
   }
   const today = date.getFullYear() + '-' + month() +'-'+ date.getDate();
-  console.log('today',today);
   return today;
 }
 
@@ -44,10 +43,8 @@ export const api = {
     );
   if (error) {
     console.error("Registration error:", error);
-    console.log(error);
     return { status: 400, message: error.message };
   }
-  console.log(data);
   // Insert into `customers` table, linking to auth user ID
   if(data.user){
     const { error: customerError } = await supabase.from("customers").insert({
@@ -303,7 +300,6 @@ getCurrentUser: async () => {
       console.error('Error fetching transaction details:', error);
       return null;
     } else {
-      console.log('Transaction Data:', data);
       return data; // Return the fetched data
     }
   },
@@ -386,7 +382,6 @@ getCurrentUser: async () => {
 
   //Order / transactions
   addOrders : async(formData:any) =>{
-    //console.log(formData);
     const {customer_id,therapist_id,paid,date,time,service} = formData;
       const { data, error } = await supabase
         .from('transactions')
@@ -448,7 +443,6 @@ getCurrentUser: async () => {
   },
 
   deleteService:async(input:any)=>{
-    console.log('id',input);
     const {error} = await supabase
       .from('services')
       .delete()
@@ -476,7 +470,6 @@ getCurrentUser: async () => {
   },
 
   processPayment:async(input:any)=>{
-    console.log(input);
     const {transaction_id,paid,payment_method} = input;
     const {data,error} = await supabase
       .from('transactions')

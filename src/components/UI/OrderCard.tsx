@@ -67,7 +67,6 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
   };
 
   const handleDownloadInvoice = () => {
-    console.log('clicked');
     const transaction = {
       transaction_id: id,
       customer_name: customerName,

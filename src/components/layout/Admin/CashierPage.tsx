@@ -29,7 +29,6 @@ const CashierPage = () => {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'transactions' },
         (payload: any) => {
-          //console.log('Real-time update payload:', payload);
 
           setTransactionsData((prevData) => {
             if (payload.eventType === 'INSERT') {

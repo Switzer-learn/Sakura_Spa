@@ -34,8 +34,6 @@ export default function EmployeeList() {
   };
 
   const handleDeleteClick = async (id: number) => {
-    console.log(id);
-    console.log(typeof(id));
     if (window.confirm("Are you sure you want to delete this employee?")) {
       const response = await api.deleteEmployee(id);
       if(response.status===200){

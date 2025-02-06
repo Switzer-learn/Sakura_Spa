@@ -45,8 +45,6 @@ const EmployeeRegistration: React.FC<EmployeeRegistrationProps> = ({ adminLogin 
         response = await api.addUpdateEmployee(updatedFormData);
       }
 
-      console.log("Form Submitted:", updatedFormData);
-
       if (response.status === 200) {
         alert("New Employee successfully registered");
       } else {
