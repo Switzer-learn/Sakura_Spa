@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ServiceCard from '../../UI/ServiceCard';
 import { api } from '../../../services/api';
+import { Link } from 'react-router-dom';
 
 // Define an interface for a single service record from the API.
 interface ServiceItem {
@@ -76,7 +77,7 @@ const ServiceSection: React.FC = () => {
     setActiveIndex(prevIndex => (prevIndex === index ? null : index));
   };
 
-  const getImageUrl = (n: number) => `url('/assets/images/${(n % 6) + 1}.jpg')`;
+  const getImageUrl = (n: number) => `url('/assets/images/${index}.jpg')`;
 
   if (loading) {
     return (
@@ -96,7 +97,7 @@ const ServiceSection: React.FC = () => {
         <div key={index} className="mb-8">
           <button
             onClick={() => toggleService(index)}
-            className="w-full rounded-xl h-48 px-5 flex items-end bg-cover bg-center"
+            className="w-full rounded-xl h-48 px-5 flex items-end bg-cover bg-center bg-gray-300"
             style={{ backgroundImage: getImageUrl(index) }}
             aria-label={service.service_type}
           >
@@ -124,9 +125,9 @@ const ServiceSection: React.FC = () => {
         </div>
       ))}
       <div className="flex justify-center mt-12">
-        <button className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-blue-700 transition-all">
+        <Link to="/Booking" className="bg-blue-600 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-blue-700 transition-all">
           Book Your Schedule Now
-        </button>
+        </Link>
       </div>
     </section>
   );
