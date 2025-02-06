@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { api } from '../../../services/api'
+import {useNavigate} from 'react-router-dom'
 
 const AdminSideMenu = (props: any) => {
   const [employeeOpen, setEmployeeOpen] = useState(false);
@@ -6,6 +8,18 @@ const AdminSideMenu = (props: any) => {
   const [financeOpen, setFinanceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false); // For mobile responsiveness
   const [serviceOpen, setServiceOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogOut = async() =>{
+    const response = await api.logout();
+    if(response.status==200){
+      alert('Logout success')
+      navigate('/');
+    }else{
+      alert('Logout fail. check console')
+      console.log(response)
+    }
+  }
 
   return (
     <div>
@@ -98,12 +112,6 @@ const AdminSideMenu = (props: any) => {
                 <ul className="px-4 text-md font-normal flex flex-col">
                   <button
                     className="hover:text-lg text-start py-1 px-2"
-                    onClick={() => props.onMenuClick("addService")}
-                  >
-                    Add Service
-                  </button>
-                  <button
-                    className="hover:text-lg text-start py-1 px-2"
                     onClick={() => props.onMenuClick("serviceList")}
                   >
                     Service List
@@ -153,27 +161,18 @@ const AdminSideMenu = (props: any) => {
                 Customer List
               </button>
             </div>
-            
             <div>
               <button
                 className="w-full text-left py-2 px-4 hover:bg-green-700"
-                onClick={() => props.onMenuClick("testingRegister")}
+                onClick={() => props.onMenuClick("Walk-in Customer Order")}
               >
-                Testing Register
+                Walk-In Customer Order
               </button>
             </div>
             <div>
               <button
                 className="w-full text-left py-2 px-4 hover:bg-green-700"
-                onClick={() => props.onMenuClick("testingCustomerOrder")}
-              >
-                Testing Customer Order
-              </button>
-            </div>
-            <div>
-              <button
-                className="w-full text-left py-2 px-4 hover:bg-green-700"
-                onClick={() => console.log('log out')}
+                onClick={handleLogOut}
               >
                 Logout
               </button>

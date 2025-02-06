@@ -1,22 +1,5 @@
 // API service functions
 import supabase from '../utils/supabase';
-import bcrypt from "bcryptjs";
-
-const saltRounds = parseInt(import.meta.env.SALT_ROUNDS);
-
-async function encryptNewPassword(pass:string){
-  const newPassword = await bcrypt.hash(pass, saltRounds);
-  return newPassword;
-}
-
-async function fetchUsername(dbName:string,username:string){
-  let {data} = await supabase.from(dbName)
-    .select('*')
-    .eq('username',username)
-    .single();
-
-    return data
-}
 
 function todayDate(){
   const date = new Date()
@@ -40,7 +23,6 @@ function generateTransactionId(){
 
 export const api = {
   // Auth
-  
   customerRegister: async (credentials:any) => {
   const { email, password, fullName,phoneNumber } = credentials;
   
@@ -77,7 +59,7 @@ export const api = {
 },
 
 // **LOGIN using Supabase Auth**
-login: async ({ email, password }) => {
+login: async ({ email, password }: { email: string; password: string }) => { 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     console.error("Login error:", error);
@@ -95,6 +77,35 @@ logout: async () => {
   }
   return { status: 200, message: "Logged out successfully" };
 },
+
+checkAdminRole: async (id: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('employees')
+      .select('role')
+      .eq('auth_user_id', id);
+
+    if (error) {
+      return { status: 500, message: error };
+    }
+
+    if (data && data.length > 0) {
+      const role = data[0].role; // Extract role from the first object
+
+      if (role === "Owner") {
+        return { status: 200, message: 'User is an Admin' };
+      } else {
+        return { status: 400, message: 'User is not Admin' };
+      }
+    }
+
+    return { status: 404, message: 'User not found' };
+  } catch (err) {
+    console.error(err);
+    return { status: 500, message: 'Unexpected error' };
+  }
+},
+
 
 // **GET CURRENT LOGGED-IN USER**
 getCurrentUser: async () => {
@@ -119,6 +130,7 @@ getCurrentUser: async () => {
     return data;
   },
 
+  //customer
   getSpecificCustomer:async(id:string)=>{
     let {data,error} = await supabase
       .from('customers')
@@ -129,7 +141,7 @@ getCurrentUser: async () => {
       if(error){
         return {status:500, message:error}
       }
-      return data;
+      return {status:200,data:data};
   },
 
   //getInformation
@@ -150,6 +162,103 @@ getCurrentUser: async () => {
       return null
     }
     return data;
+  },
+
+  updateEmployee: async (employee_id:any,input:any)=>{
+    const {full_name,address,phone_number,age,id_card_num,salary,username,role} = input;
+    const { error } = await supabase
+      .from('employees')
+      .update({
+        full_name,
+        address,
+        phone_number,
+        age,
+        id_card_num,
+        salary,
+        username,
+        role
+      })
+      .eq('employee_id',employee_id);
+      if(error){
+        return {status:500,message:error}
+      }
+      return {status:200,message:'Employee updated successfully'}
+  },
+
+  deleteEmployee:async(input:any)=>{
+    const {error} = await supabase
+      .from('employees')
+      .delete()
+      .eq('employee_id',input)
+
+    if(error){
+      return {status:500,message:error}
+    }
+    return{status:200,message:'Employee deleted'}
+  },
+
+  EmployeeLogin: async (email: string, password: string) => {
+    // Sign in employee using Supabase Auth with email & password
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (authError) {
+      console.error("Error during employee login:", authError);
+      return { status: 400, message: authError.message };
+    }
+
+    // Retrieve the employee record from the "employees" table using the auth user ID
+    const userId = authData.user.id;
+    const { data: employeeData, error: employeeError } = await supabase
+      .from("employees")
+      .select("*")
+      .eq("auth_user_id", userId)
+      .single();
+
+    if (employeeError) {
+      console.error("Error fetching employee data:", employeeError);
+      return { status: 400, message: employeeError.message };
+    }
+
+    // Return employee details (you can also store details locally if needed)
+    return { status: 200, message: "Login successful", employee: employeeData };
+  },
+
+  EmployeeAdminRegistration: async (input: any) => {
+    const { email, full_name, address, age, id_card_num, salary, password, phone_number } = input;
+
+    // Sign up the employee using Supabase Auth with email & password
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      // Optionally include email redirect options here
+    });
+
+    if (authError) {
+      console.error("Error during employee sign up:", authError);
+      return { status: 400, message: authError.message };
+    }
+
+    // Insert additional employee details into the "employees" table
+    if (authData.user) {
+      const { error: insertError } = await supabase.from("employees").insert({
+        auth_user_id: authData.user.id,  // Link employee record to the auth user ID
+        full_name:full_name,
+        address:address,
+        age:age,
+        id_card_num:id_card_num,
+        salary:salary,
+        phone_number:phone_number
+      });
+
+      if (insertError) {
+        console.error("Error inserting employee data:", insertError);
+        return { status: 400, message: insertError.message };
+      }
+      return { status: 200, message: "Employee registration successful", user: authData.user };
+    }
+    return { status: 400, message: "Employee registration failed" };
   },
   //Inventory
   getInventory: async()=> {
@@ -185,7 +294,6 @@ getCurrentUser: async () => {
   //insert & update
   //Employee
   addUpdateEmployee: async (formData: any) => {
-    const newPassword = await encryptNewPassword(formData.password)
     const { data, error } = await supabase
       .from('employees')
       .upsert(
@@ -197,7 +305,6 @@ getCurrentUser: async () => {
             id_card_num: formData.KTP,
             salary: formData.salary,
             username: formData.userName,
-            password: newPassword,
             role: formData.role
           }
         , 
@@ -237,25 +344,17 @@ getCurrentUser: async () => {
     }
     return {data:data,status:200};
   },
-  //customer registration
-  addCustomer: async(formData:any)=>{
-    const newPassword = await encryptNewPassword(formData.password);
-    const { data, error } = await supabase
-      .from('customers')
-      .insert(
-          { 
-            customer_name: formData.name,
-            username: formData.username,
-            password: newPassword,
-            phone_number: formData.phoneNumber,
-          }
-      )
-      .select(); // Fetching the data after insert
-    if (error) {
-      console.error("Error registering Customer:", error);
-      return {status:error.code,message:error}
+
+  deleteInventory:async(input:any)=>{
+    const {error} = await supabase
+      .from('inventory')
+      .delete()
+      .eq('inventory_id',input);
+
+    if(error){
+      return {status:500,message:error}
     }
-    return {data:data,status:200};
+    return {status:200,message:'Selected Inventory deleted'}
   },
 
   //Order / transactions
@@ -284,9 +383,58 @@ getCurrentUser: async () => {
       return {data:data,status:200};
   },
 
+  addService:async(input:any)=>{
+    const {service_name,service_duration,service_price,service_type,description} = input;
+    const {error} = await supabase
+      .from('services')
+      .insert({
+        service_name:service_name,
+        service_duration:service_duration,
+        service_price:service_price,
+        service_type:service_type,
+        keterangan:description
+      })
+  if(error){
+    return {status:500,message:error}
+  }
+  return {status:200,message:'New service insert success'}
+  },
+
+  updateService:async(input:any)=>{
+    const {service_id,service_name,service_duration,service_price,service_type,description} = input;
+    const {error} = await supabase
+      .from('services')
+      .update({
+        service_id:service_id,
+        service_name:service_name,
+        service_duration:service_duration,
+        service_price:service_price,
+        service_type:service_type,
+        description:description
+      })
+      .eq('service_id',service_id)
+    
+    if(error){
+      return {status:500,message:error}
+    }
+  return {status:200,message:'Service update success'}
+  },
+
+  deleteService:async(input:any)=>{
+    console.log('id',input);
+    const {error} = await supabase
+      .from('services')
+      .delete()
+      .eq('service_id',input)
+      if(error){
+        return {status:500,message:error}
+      }
+      return {status:200,message:'deleted successfully'}
+  },
+
   setTherapist:async(input:any)=>{
     const {therapist_id,transaction_id} = input;
-    let {data,error} = await supabase
+    let {error} = await supabase
       .from('transactions')
       .update({
         therapist_id:therapist_id
@@ -314,9 +462,5 @@ getCurrentUser: async () => {
         return {status:500,message:error}
       }
     return {status:200, message:data}
-  },
-
-  deleteService:async(input:any)=>{
-    console.log(input);
   }
 };

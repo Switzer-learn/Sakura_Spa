@@ -58,6 +58,14 @@ const ServiceModal: React.FC<ServiceModalProps> = ({
     if (confirm("Are you sure you want to save this service?")) {
       onSave(formData);
     }
+    setFormData({
+      service_id: 0,
+      service_name: "",
+      service_duration: 0,
+      service_price: 0,
+      description: "",
+      service_type: "",
+    });
   };
 
   // Handle Cancel Click

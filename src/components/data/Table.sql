@@ -16,7 +16,7 @@ CREATE TABLE customers (
 
 -- Create Employees Table
 CREATE TABLE employees (
-    employee_id SERIAL PRIMARY KEY,
+    employee_id VARCHAR PRIMARY KEY,
     full_name VARCHAR(100) NOT NULL,
     address TEXT,
     phone_number VARCHAR(20) UNIQUE, -- Ensure phone number is unique

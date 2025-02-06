@@ -15,7 +15,6 @@ const CashierPage = () => {
     const fetchTransactionData = async () => {
       try {
         const response = await api.getTransactions();
-        console.log("Fetched transactions:", response);
         setTransactionsData(response || []);
       } catch (error) {
         console.error('Error fetching transactions:', error);
@@ -30,7 +29,7 @@ const CashierPage = () => {
         'postgres_changes',
         { event: '*', schema: 'public', table: 'transactions' },
         (payload: any) => {
-          console.log('Real-time update payload:', payload);
+          //console.log('Real-time update payload:', payload);
 
           setTransactionsData((prevData) => {
             if (payload.eventType === 'INSERT') {
@@ -70,10 +69,8 @@ const CashierPage = () => {
   }, [transactionsData, selectedDate]);
 
   const handleEdit = async (input: any) => {
-    console.log('Edit transaction with input:', input);
     try {
       const response = await api.setTherapist(input);
-      console.log('Therapist updated:', response);
       const updatedTransactions = await api.getTransactions();
       setTransactionsData(updatedTransactions || []);
     } catch (error) {
@@ -82,7 +79,6 @@ const CashierPage = () => {
   };
 
   const handlePayment = (transaction: any) => {
-    console.log('Process payment for transaction', transaction);
     setSelectedTransaction(transaction);
     setIsPaymentOpen(true);
   };

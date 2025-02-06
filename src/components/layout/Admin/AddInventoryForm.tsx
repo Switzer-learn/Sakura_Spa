@@ -1,26 +1,27 @@
 import * as React from "react";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
-import {api} from '../../../services/api'
+import { api } from "../../../services/api";
 
 const AddInventoryForm: React.FC = () => {
-  const [jumlah, setJumlah] = React.useState(0);
-  const [satuan, setSatuan] = React.useState("pcs");
-  const [keterangan, setKeterangan] = React.useState("");
-  const [harga, setHarga] = React.useState(0);
-  const [inventoryName, setInventoryName] = React.useState("");
-  const [inventoryId, setInventoryId] = React.useState("");
-  const [inventoryData,setInventoryData] = React.useState<any[]>([])
+  const [jumlah, setJumlah] = React.useState<number | null>(0);
+  const [satuan, setSatuan] = React.useState<string>("pcs");
+  const [keterangan, setKeterangan] = React.useState<string>("");
+  const [harga, setHarga] = React.useState<number | null>(0);
+  const [inventoryName, setInventoryName] = React.useState<string>("");
+  const [inventoryId, setInventoryId] = React.useState<string>("");
+  const [inventoryData, setInventoryData] = React.useState<any[]>([]);
 
-  // Check if the entered inventory name matches data
-  React.useEffect(()=>{
-    const fetchInventory =async()=>{
+  // Fetch inventory data once on mount
+  React.useEffect(() => {
+    const fetchInventory = async () => {
       const response = await api.getInventory();
-      setInventoryData(response||[]);
-    }
+      setInventoryData(response || []);
+    };
     fetchInventory();
-  },[])
+  }, []);
 
+  // Update fields when inventoryName changes
   React.useEffect(() => {
     const matchedInventory = inventoryData.find((item) => item.name === inventoryName);
     if (matchedInventory) {
@@ -29,8 +30,20 @@ const AddInventoryForm: React.FC = () => {
       setSatuan(matchedInventory.unit || "pcs");
       setKeterangan(matchedInventory.description || "");
       setHarga(matchedInventory.price || 0);
+    } else if (inventoryName === "") {
+      resetForm();
     }
   }, [inventoryName]);
+
+  // Reset form fields
+  const resetForm = () => {
+    setInventoryId("");
+    setInventoryName("");
+    setJumlah(0);
+    setSatuan("pcs");
+    setKeterangan("");
+    setHarga(0);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,13 +57,13 @@ const AddInventoryForm: React.FC = () => {
     };
     console.log("Inventory Data:", formData);
     const response = await api.addUpdateInventory(formData);
-    if(response.status==200){
-      alert('Inventory added successfully')
-    }else{
-      console.log(response.message)
-      alert('Inventory add failed, check console log')
+    if (response.status === 200) {
+      alert("Inventory added successfully");
+      resetForm(); // Reset form after successful submission
+    } else {
+      console.log(response.message);
+      alert("Inventory add failed, check console log");
     }
-    // Add your form submission logic here
   };
 
   return (
@@ -63,14 +76,14 @@ const AddInventoryForm: React.FC = () => {
         {/* ID Barang */}
         <div className="flex flex-col gap-2">
           <label htmlFor="inventoryID" className="font-medium">
-            ID Barang:
+            ID Barang: <span className='text-sm text-gray-500'>jika ingin memasukan data baru pastikan id barang 0</span>
           </label>
           <input
             id="inventoryID"
-            type='text'
+            type="text"
             value={inventoryId}
             disabled
-            className='px-3 py-4'
+            className="px-3 py-4 border rounded"
           />
         </div>
 
@@ -84,7 +97,7 @@ const AddInventoryForm: React.FC = () => {
             freeSolo
             value={inventoryName}
             options={inventoryData.map((option) => option.name)}
-            onInputChange={(event,newValue) => setInventoryName(newValue)}
+            onInputChange={(event, newValue) => setInventoryName(newValue)}
             renderInput={(params) => (
               <TextField {...params} label="Nama Barang" required />
             )}
@@ -99,8 +112,8 @@ const AddInventoryForm: React.FC = () => {
           <TextField
             id="jumlah"
             type="number"
-            value={jumlah}
-            onChange={(e) => setJumlah(parseInt(e.target.value))}
+            value={jumlah ?? ""}
+            onChange={(e) => setJumlah(e.target.value ? parseInt(e.target.value) : null)}
             label="Jumlah"
             required
           />
@@ -131,8 +144,8 @@ const AddInventoryForm: React.FC = () => {
           <TextField
             id="harga"
             type="number"
-            value={harga}
-            onChange={(e) => setHarga(parseInt(e.target.value))}
+            value={harga ?? ""}
+            onChange={(e) => setHarga(e.target.value ? parseInt(e.target.value) : null)}
             label="Harga"
             required
           />
@@ -153,8 +166,15 @@ const AddInventoryForm: React.FC = () => {
           />
         </div>
 
-        {/* Submit Button */}
-        <div className="col-span-2 flex justify-end">
+        {/* Buttons */}
+        <div className="col-span-2 flex justify-between">
+          <button
+            type="button"
+            onClick={resetForm}
+            className="rounded-lg bg-gray-500 hover:bg-gray-600 text-white px-6 py-2"
+          >
+            Reset
+          </button>
           <button
             type="submit"
             className="rounded-lg bg-blue-500 hover:bg-blue-600 text-white px-6 py-2"

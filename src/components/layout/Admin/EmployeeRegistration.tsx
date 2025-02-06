@@ -1,18 +1,22 @@
 import React, { useState } from "react";
 import * as Component from "../../../components";
-import {api} from '../../../services/api'
+import { api } from "../../../services/api"; // Use your existing API
 
-const EmployeeRegistration: React.FC = () => {
+interface EmployeeRegistrationProps {
+  adminLogin?: boolean; // Determines whether admin or regular employee is being registered
+}
+
+const EmployeeRegistration: React.FC<EmployeeRegistrationProps> = ({ adminLogin = false }) => {
   const [role, setRole] = useState("Therapist");
   const [newRole, setNewRole] = useState("");
   const [formData, setFormData] = useState({
-    fullName: "",
+    full_name: "",
     address: "",
-    phoneNum: "",
+    phone_number: "",
     age: "",
-    KTP: "",
+    id_card_num: "",
     salary: "",
-    userName: "",
+    email: "",
     password: "",
   });
 
@@ -25,30 +29,34 @@ const EmployeeRegistration: React.FC = () => {
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Add the new role to formData if the role is 'Lainnya'
+
     const updatedFormData = {
       ...formData,
-      role: role === "Lainnya" ? newRole : role // If role is 'Lainnya', use the new role
+      role: role === "Lainnya" ? newRole : role, // If "Lainnya", use custom role
     };
-  
-    // Pass updatedFormData to the API
-    const response = await api.addUpdateEmployee(updatedFormData);
-  
-    console.log("Form Submitted", updatedFormData);
-  
-    if (response.status === 200) {
-      alert('New Employee successfully registered');
-    } else {
-      alert('Failed to input new employee, check console log');
-      console.log('Failed to register', response.message);
-    }
-  };
 
-  // Role selector change handler
-  const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRole(e.target.value);
-    if (e.target.value !== "Lainnya") setNewRole("");
+    try {
+      let response;
+      if (adminLogin) {
+        // Register Admin with Supabase Auth
+        response = await api.EmployeeAdminRegistration(updatedFormData);
+      } else {
+        // Register Regular Employee (No Auth)
+        response = await api.addUpdateEmployee(updatedFormData);
+      }
+
+      console.log("Form Submitted:", updatedFormData);
+
+      if (response.status === 200) {
+        alert("New Employee successfully registered");
+      } else {
+        alert('Register Failed')
+        console.log(response.message);
+      }
+    } catch (error: any) {
+      console.error("Registration Error:", error.message);
+      alert("Failed to register employee. Check console for details.");
+    }
   };
 
   return (
@@ -59,99 +67,33 @@ const EmployeeRegistration: React.FC = () => {
           {/* Personal Data Section */}
           <div className="border rounded-lg shadow-md p-4">
             <h2 className="font-semibold text-center">Data Diri</h2>
-            <Component.TextInput
-              label="Nama Lengkap"
-              placeholder="Masukkan nama lengkap"
-              type="text"
-              id="fullName"
-              value={formData.fullName}
-              onChange={handleInputChange}
-            />
-            <Component.TextInput
-              label="Alamat"
-              placeholder="Masukkan alamat"
-              type="text"
-              id="address"
-              value={formData.address}
-              onChange={handleInputChange}
-            />
-            <Component.TextInput
-              label="No HP"
-              placeholder="+62"
-              type="text"
-              id="phoneNum"
-              value={formData.phoneNum}
-              onChange={handleInputChange}
-            />
-            <Component.TextInput
-              label="Usia"
-              placeholder="Masukkan usia"
-              type="number"
-              id="age"
-              value={formData.age}
-              onChange={handleInputChange}
-            />
-            <Component.TextInput
-              label="No KTP"
-              placeholder="Masukkan Nomor KTP"
-              type="text"
-              id="KTP"
-              pattern="[0-9]{16}"
-              value={formData.KTP}
-              onChange={handleInputChange}
-            />
-            <Component.TextInput
-              label="Gaji"
-              placeholder="Rp."
-              type="number"
-              id="salary"
-              value={formData.salary}
-              onChange={handleInputChange}
-            />
+            <Component.TextInput label="Nama Lengkap" id="full_name" type="text" value={formData.full_name} onChange={handleInputChange} />
+            <Component.TextInput label="Alamat" id="address" type="text" value={formData.address} onChange={handleInputChange} />
+            <Component.TextInput label="No HP" id="phone_number" type="text" value={formData.phone_number} onChange={handleInputChange} />
+            <Component.TextInput label="Usia" id="age" type="number" value={formData.age} onChange={handleInputChange} />
+            <Component.TextInput label="No KTP" id="id_card_num" type="text" pattern="[0-9]{16}" value={formData.id_card_num} onChange={handleInputChange} />
+            <Component.TextInput label="Gaji" id="salary" type="number" value={formData.salary} onChange={handleInputChange} />
           </div>
 
-          {/* Login Section */}
+          {/* Login Section (Only for Admins) */}
           <div className="border rounded-lg shadow-md p-4">
-            <h2 className="font-semibold text-center">Username & Password</h2>
-            <Component.TextInput
-              label="Username"
-              placeholder="Masukkan Username"
-              type="text"
-              id="userName"
-              value={formData.userName}
-              onChange={handleInputChange}
-            />
-            <Component.TextInput
-              label="Password"
-              placeholder="Password"
-              type="password"
-              id="password"
-              value={formData.password}
-              onChange={handleInputChange}
-            />
-            <label htmlFor="roleSelector" className="block mt-3">
-              Role
-            </label>
-            <select
-              id="roleSelector"
-              className="border rounded w-full p-2 mt-1"
-              value={role}
-              onChange={handleRoleChange}
-            >
+            <h2 className="font-semibold text-center">Email & Password {adminLogin ? "(Admin Only)" : "(Optional)"}</h2>
+            <Component.TextInput label="Email" id="email" type="email" value={formData.email} onChange={handleInputChange} />
+            {adminLogin && (
+              <Component.TextInput label="Password" id="password" type="password" value={formData.password} onChange={handleInputChange} />
+            )}
+
+            <label htmlFor="roleSelector" className="block mt-3">Role</label>
+            <select id="roleSelector" className="border rounded w-full p-2 mt-1" value={role} onChange={(e) => setRole(e.target.value)}>
               <option value="Admin">Admin</option>
               <option value="Therapist">Therapist</option>
               <option value="Lainnya">Lainnya</option>
             </select>
+
             {role === "Lainnya" && (
               <div className="mt-3">
                 <label className="font-semibold">Jabatan Baru:</label>
-                <input
-                  type="text"
-                  className="border rounded w-full p-2 mt-1"
-                  placeholder="Masukkan jabatan baru"
-                  value={newRole}
-                  onChange={(e) => setNewRole(e.target.value)}
-                />
+                <input type="text" className="border rounded w-full p-2 mt-1" placeholder="Masukkan jabatan baru" value={newRole} onChange={(e) => setNewRole(e.target.value)} />
               </div>
             )}
             <p className="mt-3 font-semibold">Role: {role === "Lainnya" ? newRole : role}</p>
@@ -159,10 +101,7 @@ const EmployeeRegistration: React.FC = () => {
         </div>
 
         {/* Submit Button */}
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-5 py-2 mt-6 block mx-auto"
-        >
+        <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white rounded-lg px-5 py-2 mt-6 block mx-auto">
           Submit
         </button>
       </form>

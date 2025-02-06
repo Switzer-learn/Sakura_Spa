@@ -16,7 +16,7 @@ const Header = () => {
         if (currentUser) {
           const customerData = await api.getSpecificCustomer(currentUser.id);
           if (customerData) {
-            setUser(customerData.customer_name);
+            setUser(customerData.data.customer_name);
           }
         }
          // If user exists, set it in the state
@@ -24,7 +24,6 @@ const Header = () => {
         console.log("Error fetching user:", error);
       }
     };
-    
     fetchUser();
   }, []);
 

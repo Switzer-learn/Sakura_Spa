@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from "react";
-import * as Components from '../../../components';
-import { api } from '../../../services/api';
-import { useNavigate } from 'react-router-dom'
+import * as Components from "../../../components";
+import { api } from "../../../services/api";
+import { useNavigate } from "react-router-dom";
 
-const CustomerOrderForm: React.FC = () => {
-  const [dates, setDates] = useState('');
-  const [time, setTime] = useState('');
-  const [customerName, setCustomerName] = useState('');
-  const [customerId, setCustomerId] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+interface CustomerOrderFormProps {
+  walkIn: boolean;
+}
+
+const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn }) => {
+  const [dates, setDates] = useState("");
+  const [time, setTime] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerId, setCustomerId] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [originalServices, setOriginalServices] = useState<any[]>([]);
   const [serviceName, setServiceName] = useState<string[]>([]);
   const [serviceDuration, setServiceDuration] = useState<any[]>([]);
-  const [selectedService, setSelectedService] = useState<string>('');
+  const [selectedService, setSelectedService] = useState<string>("");
   const [selectedServiceDuration, setSelectedServiceDuration] = useState<number>();
   const [filteredData, setFilteredData] = useState<any[]>([]);
-  const [treatmentDescription, setTreatmentDescription] = useState<string>('');
+  const [treatmentDescription, setTreatmentDescription] = useState<string>("");
   const [finalService, setFinalService] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -28,48 +32,55 @@ const CustomerOrderForm: React.FC = () => {
   };
 
   useEffect(() => {
+    // Optionally, if there is any logic specific for walkIn === false, you can add it here.
     async function fetchCurrentUser() {
       const response = await api.getCurrentUser();
       if (response) {
         setCustomerId(response.id);
         const customerData = await api.getSpecificCustomer(response.id);
         if (customerData) {
-          setCustomerName(customerData.customer_name);
-          setPhoneNumber(customerData.phone_number);
+          setCustomerName(customerData.data.customer_name);
+          setPhoneNumber(customerData.data.phone_number);
           setLoading(false);
         }
-      }else{
-        navigate('/Login')
+      } else {
+        navigate("/Login");
       }
     }
-    fetchCurrentUser();
-  }, []);
+    if(walkIn===false)
+    {
+      fetchCurrentUser();
+    }
+    
+  }, [navigate]);
 
   useEffect(() => {
-    const fetchServicesData = async () => {
-      const response = await api.getServices();
-      const data: any = Array.from(new Set(response?.map(service => service.service_name)));
-      setOriginalServices(response || []);
-      setServiceName(data || []);
-    };
-    fetchServicesData();
+    if(walkIn===false){
+        const fetchServicesData = async () => {
+        const response = await api.getServices();
+        const data: any = Array.from(new Set(response?.map((service) => service.service_name)));
+        setOriginalServices(response || []);
+        setServiceName(data || []);
+      };
+      fetchServicesData();
+    }
   }, []);
 
   useEffect(() => {
     if (!originalServices.length) return;
-    const data = originalServices.filter(service => service.service_name === selectedService);
+    const data = originalServices.filter((service) => service.service_name === selectedService);
     setFilteredData(data);
     setServiceDuration(data);
     if (data.length) {
       setSelectedServiceDuration(data[0].service_duration);
       setTreatmentDescription(data[0].keterangan);
     }
-  }, [selectedService]);
+  }, [selectedService, originalServices]);
 
   useEffect(() => {
-    const data = filteredData.filter(service => service.service_duration === selectedServiceDuration);
+    const data = filteredData.filter((service) => service.service_duration === selectedServiceDuration);
     setFinalService(data);
-  }, [selectedServiceDuration]);
+  }, [selectedServiceDuration, filteredData]);
 
   function handleSelectedService(e: React.ChangeEvent<HTMLSelectElement>) {
     setSelectedService(e.target.value);
@@ -95,10 +106,10 @@ const CustomerOrderForm: React.FC = () => {
     const response = await api.addOrders(formData);
     console.log(response);
     if (response.status === 200) {
-      alert('Scheduling berhasil, Terima Kasih, kami tunggu kedatangan anda');
-      navigate('/');
+      alert("Scheduling berhasil, Terima Kasih, kami tunggu kedatangan anda");
+      navigate("/");
     } else {
-      alert('Scheduling gagal, coba lagi atau hubungi kami melalui whatsapp');
+      alert("Scheduling gagal, coba lagi atau hubungi kami melalui whatsapp");
       console.log(response);
     }
   }
@@ -113,84 +124,147 @@ const CustomerOrderForm: React.FC = () => {
       timeSlots.push(`${String(hour).padStart(2, "0")}:00`);
       timeSlots.push(`${String(hour).padStart(2, "0")}:30`);
     }
-    //timeSlots.push("19:30"); // Add the final 7:00 PM slot
     return timeSlots;
   };
 
   // Valid time slots based on date
   const validTimeSlots = generateTimeSlots();
-  const minTime = dates === today ? validTimeSlots.find(slot => slot >= new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })) || "08:00" : "08:00";
+  const minTime =
+    dates === today
+      ? validTimeSlots.find(
+          (slot) =>
+            slot >= new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
+        ) || "08:00"
+      : "08:00";
 
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center h-screen">
-        <img src='./Sakura_Spa_Logo.png' className='animate-pulse size-52 flex my-auto mx-auto' />
+        <img src="./Sakura_Spa_Logo.png" className="animate-pulse size-52 flex my-auto mx-auto" alt="Loading" />
         <span className="text-lg font-semibold text-gray-700">Loading...</span>
       </div>
     );
   }
 
   return (
-    <div className='w-screen bg-green-700'>
-    <Components.Header />
-    <div id='customerOrderForm' className='flex flex-col items-center p-4'>
-      <form className='w-full max-w-3xl bg-white shadow-lg rounded-lg p-6' onSubmit={handleSubmit}>
-      <h1 className='text-3xl font-bold text-green-700 mb-6 text-center'>Customer Scheduling Form</h1>
-        <div className='flex flex-col sm:flex-row gap-6'>
-          <div className='w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4'>
-            <span className='text-xl font-semibold mb-4 text-gray-700'>Personal Information</span>
-            <div className='flex flex-col'>
-              <Components.TextInput id='fullName' label='Full Name' placeholder='Enter Full Name' type='text' value={customerName} disabled />
-              <Components.TextInput id='phoneNumber' label='Phone Number' placeholder='+62' type='text' value={phoneNumber} disabled />
-            </div>
-          </div>
-          <div className='w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4'>
-            <span className='text-xl font-semibold mb-4 text-gray-700'>Schedule</span>
-            <div className='flex flex-col gap-4'>
-              <div className='flex flex-col'>
-                <label className='font-medium text-gray-700 mb-2'>Date</label>
-                <input type='date' min={today} onChange={(e) => setDates(e.target.value)} value={dates} className='w-full px-3 py-2 border border-gray-300 rounded-md' required />
-              </div>
-              <div className='flex flex-col'>
-                <label className='font-medium text-gray-700 mb-2'>Time</label>
-                <select onChange={(e) => setTime(e.target.value)} value={time} className='w-full px-3 py-2 border border-gray-300 rounded-md' required>
-                  <option value="" disabled>Select a time</option>
-                  {validTimeSlots.filter(slot => dates !== today || slot >= minTime).map((slot, index) => (
-                    <option key={index} value={slot}>{slot}</option>
-                  ))}
-                </select>
-              </div>
-              <div className='flex flex-col'>
-                <label className='font-medium text-gray-700 mb-2'>Service</label>
-                <select onChange={handleSelectedService} value={selectedService || ''} className='w-full px-3 py-2 border border-gray-300 rounded-md'>
-                  <option value="" disabled>Select your option</option>
-                  {serviceName.map((order, index) => (
-                    <option key={index}>{order}</option>
-                  ))}
-                </select>
-                {treatmentDescription && <span className='my-2 text-gray-700'>Description: {treatmentDescription}</span>}
-                <label className='font-medium text-gray-700 mb-2'>Duration</label>
-                <select onChange={handleDurationChange} value={selectedServiceDuration || 0} className='w-full px-3 py-2 border border-gray-300 rounded-md'>
-                  <option value="" disabled>Select your option</option>
-                  {serviceDuration.map((order, index) => (
-                    <option key={index} value={order.service_duration}>{order.service_duration} minutes</option>
-                  ))}
-                </select>
-                {finalService.length > 0 && finalService[0]?.service_price && (
-                  <span className='text-gray-700'>Price: Rp.{formatPrice(finalService[0].service_price)},-</span>
-                )}
+    <div className="w-screen bg-green-700">
+      <Components.Header />
+      <div id="customerOrderForm" className="flex flex-col items-center p-4">
+        <form className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-6" onSubmit={handleSubmit}>
+          <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">Customer Scheduling Form</h1>
+          <div className="flex flex-col sm:flex-row gap-6">
+            <div className="w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4">
+              <span className="text-xl font-semibold mb-4 text-gray-700">Personal Information</span>
+              <div className="flex flex-col">
+                {/* 
+                  When walkIn is true: fields are enabled.
+                  When walkIn is false: disable the fields.
+                */}
+                <Components.TextInput
+                  id="fullName"
+                  label="Full Name"
+                  placeholder="Enter Full Name"
+                  type="text"
+                  value={customerName}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomerName(e.target.value)}
+                  disabled={!walkIn}
+                />
+                <Components.TextInput
+                  id="phoneNumber"
+                  label="Phone Number"
+                  placeholder="+62"
+                  type="text"
+                  value={phoneNumber}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhoneNumber(e.target.value)}
+                  disabled={!walkIn}
+                />
               </div>
             </div>
+            <div className="w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4">
+              <span className="text-xl font-semibold mb-4 text-gray-700">Schedule</span>
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col">
+                  <label className="font-medium text-gray-700 mb-2">Date</label>
+                  <input
+                    type="date"
+                    min={today}
+                    onChange={(e) => setDates(e.target.value)}
+                    value={dates}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    required
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <label className="font-medium text-gray-700 mb-2">Time</label>
+                  <select
+                    onChange={(e) => setTime(e.target.value)}
+                    value={time}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    required
+                  >
+                    <option value="" disabled>
+                      Select a time
+                    </option>
+                    {validTimeSlots
+                      .filter((slot) => dates !== today || slot >= minTime)
+                      .map((slot, index) => (
+                        <option key={index} value={slot}>
+                          {slot}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="flex flex-col">
+                  <label className="font-medium text-gray-700 mb-2">Service</label>
+                  <select
+                    onChange={handleSelectedService}
+                    value={selectedService || ""}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="" disabled>
+                      Select your option
+                    </option>
+                    {serviceName.map((order, index) => (
+                      <option key={index}>{order}</option>
+                    ))}
+                  </select>
+                  {treatmentDescription && (
+                    <span className="my-2 text-gray-700">Description: {treatmentDescription}</span>
+                  )}
+                  <label className="font-medium text-gray-700 mb-2">Duration</label>
+                  <select
+                    onChange={handleDurationChange}
+                    value={selectedServiceDuration || 0}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="" disabled>
+                      Select your option
+                    </option>
+                    {serviceDuration.map((order, index) => (
+                      <option key={index} value={order.service_duration}>
+                        {order.service_duration} minutes
+                      </option>
+                    ))}
+                  </select>
+                  {finalService.length > 0 && finalService[0]?.service_price && (
+                    <span className="text-gray-700">
+                      Price: Rp.{formatPrice(finalService[0].service_price)},-
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-        <button type='submit' className='w-full py-3 mt-6 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700'>
-          Submit
-        </button>
-      </form>
-    </div>
+          <button
+            type="submit"
+            className="w-full py-3 mt-6 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
     </div>
   );
-  
 };
 
 export default CustomerOrderForm;

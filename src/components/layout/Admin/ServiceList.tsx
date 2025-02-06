@@ -3,6 +3,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
 import { api } from "../../../services/api";
+import supabase from "../../../utils/supabase"; // Import supabase client
 import ServiceModal from "./ServiceModal"; // Import the modal
 
 export default function ServiceList() {
@@ -13,6 +14,24 @@ export default function ServiceList() {
 
   useEffect(() => {
     fetchServices();
+
+    // Subscribe to Supabase Realtime
+    const subscription = supabase
+      .channel("services-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "services" },
+        (payload) => {
+          console.log("Change received!", payload);
+          handleRealtimeChange(payload);
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription when component unmounts
+    return () => {
+      supabase.removeChannel(subscription);
+    };
   }, []);
 
   // Fetch services
@@ -32,6 +51,26 @@ export default function ServiceList() {
     setLoading(false);
   };
 
+  // Handle Realtime Changes
+  const handleRealtimeChange = (payload: any) => {
+    const { eventType, new: newData, old: oldData } = payload;
+
+    setRows((prevRows) => {
+      if (eventType === "INSERT") {
+        return [...prevRows, { ...newData, id: newData.service_id }];
+      }
+      if (eventType === "UPDATE") {
+        return prevRows.map((row) =>
+          row.service_id === newData.service_id ? { ...newData, id: newData.service_id } : row
+        );
+      }
+      if (eventType === "DELETE") {
+        return prevRows.filter((row) => row.service_id !== oldData.service_id);
+      }
+      return prevRows;
+    });
+  };
+
   // Open the modal for editing
   const handleEdit = (service: any) => {
     setSelectedService(service);
@@ -48,8 +87,8 @@ export default function ServiceList() {
   const handleDelete = async (id: number) => {
     if (confirm("Are you sure you want to delete this service?")) {
       try {
+        console.log(id);
         await api.deleteService(id);
-        fetchServices();
       } catch (error) {
         console.error("Failed to delete service:", error);
       }
@@ -64,9 +103,7 @@ export default function ServiceList() {
       } else {
         await api.updateService(serviceData);
       }
-
       setModalOpen(false);
-      fetchServices();
     } catch (error) {
       console.error("Error saving service:", error);
     }
