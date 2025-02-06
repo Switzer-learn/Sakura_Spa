@@ -45,8 +45,8 @@ const AddInventoryForm: React.FC = () => {
     setHarga(0);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (_event: React.FormEvent) => {
+    _event.preventDefault();
     const formData = {
       inventoryId,
       inventoryName,
@@ -76,7 +76,7 @@ const AddInventoryForm: React.FC = () => {
         {/* ID Barang */}
         <div className="flex flex-col gap-2">
           <label htmlFor="inventoryID" className="font-medium">
-            ID Barang: <span className='text-sm text-gray-500'>jika ingin memasukan data baru pastikan id barang 0</span>
+            ID Barang: <span className="text-sm text-gray-500">jika ingin memasukan data baru pastikan id barang 0</span>
           </label>
           <input
             id="inventoryID"
@@ -97,7 +97,7 @@ const AddInventoryForm: React.FC = () => {
             freeSolo
             value={inventoryName}
             options={inventoryData.map((option) => option.name)}
-            onInputChange={(event, newValue) => setInventoryName(newValue)}
+            onInputChange={(_event, newValue) => setInventoryName(newValue)}
             renderInput={(params) => (
               <TextField {...params} label="Nama Barang" required />
             )}

@@ -1,4 +1,3 @@
-import React from "react";
 import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 import { pdf } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
@@ -103,7 +102,7 @@ interface InvoicePDFProps {
   };
 }
 
-const InvoicePDF = ({ transaction }) => (
+const InvoicePDF:React.FC<InvoicePDFProps> = ({ transaction }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       {/* Watermark */}
