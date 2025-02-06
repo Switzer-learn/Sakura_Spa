@@ -105,12 +105,15 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
         return; // Exit if there's an error
       } else {
         console.log(response)
-        if (response.data[0]?.auth_user_id) {
+        if(response.data){
+          if (response.data[0]?.auth_user_id) {
           walkInCustomerId = response.data[0].auth_user_id;
         } else {
           alert("Failed to retrieve customer ID.");
           return;
         }
+        }
+        
       }
     }
     const formData = {
