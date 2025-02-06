@@ -44,8 +44,10 @@ const Header = () => {
     <header className="px-4 md:px-10 flex justify-between items-center py-4 relative">
       {/* Left Logo */}
       <div className="flex items-center gap-2">
-        <img src="./Sakura_Spa_Logo.png" alt="logo" className="size-10" />
-        <span className="text-2xl font-bold">Sakura Spa</span>
+        <Link to='/'>
+          <img src="./Sakura_Spa_Logo.png" alt="logo" className="size-10" />
+        </Link>
+        <Link to='/' className="text-2xl font-bold">Sakura Spa</Link>
       </div>
 
       {/* Desktop Nav */}
@@ -88,7 +90,7 @@ const Header = () => {
 
       {/* Mobile Menu Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 w-full bg-white shadow-md py-4 flex flex-col items-center space-y-4 md:hidden z-50">
+        <div className="absolute bg-green-700 border top-full left-0 w-full bg-white shadow-md py-4 flex flex-col items-center space-y-4 md:hidden z-50">
           <Link to="/" className="hover:text-blue-500 transition" onClick={() => setIsOpen(false)}>Home</Link>
           <a href="#aboutUs" className="hover:text-blue-500 transition" onClick={() => setIsOpen(false)}>About Us</a>
           <a href="#serviceSection" className="hover:text-blue-500 transition" onClick={() => setIsOpen(false)}>Our Service</a>
