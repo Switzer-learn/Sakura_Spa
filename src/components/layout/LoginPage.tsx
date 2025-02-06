@@ -21,13 +21,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ staffLogin }) => {
       console.log(user)
       // First, check if the user is in the customer table.
       const customer = await api.getSpecificCustomer(user.id);
-      console.log(customer)
       if (customer.status==200) {
         navigate('/Booking');
       } else {
         // If not found in customer table, check if the user is an admin.
         const admin = await api.checkAdminRole(user.id);
-        console.log(admin)
         if (admin.status === 200) {
           navigate('/adminPage');
         } else {
@@ -65,7 +63,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ staffLogin }) => {
   return (
     <div className='text-white bg-gradient-to-br from-green-700 to-green-500 min-h-screen'>
       {/* Optionally show the header if not on staffLogin page */}
-      {staffLogin !== true && <Components.Header />}
+      {staffLogin !== true && <Components.Header customerMode={true} />}
       <div className="flex items-center justify-center min-h-screen">
         <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-lg">
           <img src='./Sakura_Spa_Logo.png' className='mx-auto w-40 h-auto' alt='Logo' />

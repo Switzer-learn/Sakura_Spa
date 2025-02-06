@@ -32,9 +32,6 @@ const PaymentPage: React.FC<PaymentPageProps> = ({
   const [paymentMethod, setPaymentMethod] = React.useState<string>("cash");
 
   const handleConfirmPayment = async () => {
-    console.log("Payment confirmed with method:", paymentMethod);
-    console.log("Transaction ID:", transaction_id);
-    console.log("Service Price:", service_price);
 
     // Create a transaction object with all necessary fields for the invoice
     const transaction = {

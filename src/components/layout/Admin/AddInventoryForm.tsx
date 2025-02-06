@@ -55,7 +55,7 @@ const AddInventoryForm: React.FC = () => {
       keterangan,
       harga,
     };
-    console.log("Inventory Data:", formData);
+    
     const response = await api.addUpdateInventory(formData);
     if (response.status === 200) {
       alert("Inventory added successfully");

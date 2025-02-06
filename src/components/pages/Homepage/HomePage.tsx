@@ -10,7 +10,7 @@ const HomePage = () => {
         <>
             <div id="Hero" className="bg-[url('/assets/images/hero_section.webp')] h-screen bg-cover text-white">
                 <Suspense fallback={<div>Loading Header...</div>}>
-                    <Header />
+                    <Header customerMode={true} />
                 </Suspense>
                 <Suspense fallback={<div>Loading Hero...</div>}>
                     <Hero />

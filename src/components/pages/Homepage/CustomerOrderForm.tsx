@@ -104,7 +104,6 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
         console.log(response);
         return; // Exit if there's an error
       } else {
-        console.log(response)
         if(response.data){
           if (response.data[0]?.auth_user_id) {
           walkInCustomerId = response.data[0].auth_user_id;
@@ -126,9 +125,7 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
       time,
       service: finalService.length ? finalService[0] : {},
     };
-    console.log("Submitted Data:", formData);
     const response = await api.addOrders(formData);
-    console.log(response);
 
     if (response.status === 200) {
       if(walkIn){
@@ -152,8 +149,8 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
   const generateTimeSlots = () => {
     const timeSlots = [];
     for (let hour = 8; hour < 20; hour++) {
-      timeSlots.push(${String(hour).padStart(2, "0")}:00);
-      timeSlots.push(${String(hour).padStart(2, "0")}:30);
+      timeSlots.push(`${String(hour).padStart(2, "0")}:00`);
+      timeSlots.push(`${String(hour).padStart(2, "0")}:30`);
     }
     return timeSlots;
   };
@@ -183,8 +180,8 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
 
   return (
     <div className="w-screen bg-green-700">
-      {adminPage === false && <Components.Header />}
-      <div id="customerOrderForm" className="flex flex-col mx-auto h-screen bg-green-700 p-4">
+      {adminPage === false && <Components.Header customerMode={true} />}
+      <div id="customerOrderForm" className="flex flex-col items-center h-screen bg-green-700 p-4">
         <form className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-6" onSubmit={handleSubmit}>
           <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">
             Customer Scheduling Form

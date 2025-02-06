@@ -19,7 +19,6 @@ export default function InventoryList() {
         "postgres_changes",
         { event: "*", schema: "public", table: "inventory" },
         (payload) => {
-          console.log("Change received!", payload);
           handleRealtimeChange(payload);
         }
       )

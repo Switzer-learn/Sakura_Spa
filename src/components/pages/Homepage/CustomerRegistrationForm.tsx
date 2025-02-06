@@ -65,7 +65,7 @@ const CustomerRegistration: React.FC = () => {
 
   return (
     <div className='bg-green-700 w-screen text-white'>
-    <Components.Header />
+    <Components.Header customerMode={true}/>
     <div className="text-gray-800 max-w-lg mx-auto my-auto p-8 bg-white shadow-lg rounded-lg border border-gray-200 md:max-w-md lg:max-w-xl">
       <img src='./Sakura_Spa_Logo.png' alt='logo' className='size-40 mx-auto my-2' />
       <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">Customer Registration</h2>
