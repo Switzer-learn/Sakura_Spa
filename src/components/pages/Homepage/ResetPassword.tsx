@@ -12,6 +12,7 @@ export default function ResetPassword() {
     e.preventDefault();
     const response = await api.updatePassword(password);
     if(response.status===200){
+        setIsSubmitted(true);
         setMessage('New Password updated')
         navigate('/Login')
     }else{
