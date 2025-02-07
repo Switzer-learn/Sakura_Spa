@@ -63,6 +63,29 @@ export const api = {
   return { status: 200, message: "Registration successful", user: data.user };
 },
 
+forgotPassword:async(email:string)=>{
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: "https://sakura-spa-seven.vercel.app/reset-password", // Customize this
+  });
+
+  if (error) {
+    return {status:500,message:error}
+  }
+  return {status:200,message:'Password email sent'}
+},
+
+updatePassword:async(newPassword:string)=>{
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    return {message:error,status:500};
+  } else {
+    return {status:200,message:'Password resetted'}
+  }
+},
+
  addWalkInCustomer:async(inputData:any)=>{
   const {customer_name,phone_number,email} = inputData;
   
