@@ -55,7 +55,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ staffLogin }) => {
       // After successful login, re-run the user fetch and redirection logic.
       await fetchAndRedirectUser();
     } else {
-      alert('Login Failed');
+      alert(`Login Failed,${response.message}`);
       console.error(response.message);
     }
   };
