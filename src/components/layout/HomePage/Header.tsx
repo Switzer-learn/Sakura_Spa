@@ -82,7 +82,7 @@ const Header:React.FC<Header> = ({customerMode}) => {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="md:hidden text-gray-800"
+        className="md:hidden text-white"
         aria-label="Toggle Menu"
       >
         {isOpen ? <FaTimes size={28} /> : <FaBars size={28} />}
