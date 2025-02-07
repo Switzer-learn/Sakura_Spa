@@ -3,7 +3,7 @@ import { FaUser, FaLock } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import * as Components from '../../components';
 import { api } from '../../services/api';
-import ContactUsButton from '../UI/ContactUsButton'
+import ContactUsButton from '../UI/ContactUsButton';
 
 interface LoginPageProps {
   staffLogin?: boolean;
@@ -63,6 +63,17 @@ const LoginPage: React.FC<LoginPageProps> = ({ staffLogin }) => {
     }
   };
 
+  const handleForgotPassword = async(e:any) =>{
+    e.preventDefault();
+    const response = await api.forgotPassword(email)
+
+    if (response.status===200) {
+      alert("Password reset email sent! Check your inbox.");
+    } else {
+      alert(`Password reset failed, ${response.message}`)
+    }
+  }
+
   return (
     <div className='text-white bg-gradient-to-br from-green-700 to-green-500 min-h-screen'>
       {/* Optionally show the header if not on staffLogin page */}
@@ -107,10 +118,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ staffLogin }) => {
 
             {/* Remember Me and Forgot Password */}
             <div className="flex justify-between text-sm text-gray-500">
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2 accent-indigo-500" /> Remember me
-              </label>
-              <a href="#" className="hover:text-indigo-500">Forgot password?</a>
+              <button onClick={handleForgotPassword} className="hover:text-indigo-500">Forgot password?</button>
             </div>
 
             {/* Submit Button */}

@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import LoginPage from "./components/layout/LoginPage"
+import ResetPassword from './components/pages/Homepage/ResetPassword';
 
 // Lazy-loaded components
 const HomePage = lazy(() => import("./components/pages/Homepage/HomePage"));
@@ -22,6 +23,7 @@ const App: React.FC = () => {
           <Route path="/employee" element={<LoginPage staffLogin={true} />} />
           <Route path="/AdminPage" element={<AdminPage />} />
           <Route path="/AdminRegister" element={<EmployeeRegistrationForm adminLogin={true} />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
