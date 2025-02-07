@@ -90,7 +90,7 @@ const Header:React.FC<Header> = ({customerMode}) => {
 
       {/* Mobile Menu Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 w-full bg-white shadow-md py-4 flex flex-col items-center space-y-4 md:hidden z-50">
+        <div className="absolute top-full left-0 w-full bg-gray-800 shadow-md py-4 flex flex-col items-center space-y-4 md:hidden z-50">
           <Link to="/" className="hover:text-blue-500 transition" onClick={() => setIsOpen(false)}>Home</Link>
           <a href="#aboutUs" className="hover:text-blue-500 transition" onClick={() => setIsOpen(false)}>About Us</a>
           <a href="#serviceSection" className="hover:text-blue-500 transition" onClick={() => setIsOpen(false)}>Our Service</a>
