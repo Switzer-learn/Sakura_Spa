@@ -4,6 +4,7 @@ const Header = lazy(() => import('../../layout/HomePage/Header'));
 const Hero = lazy(() => import('../../layout/HomePage/Hero'));
 const AboutUs = lazy(() => import('../../layout/HomePage/AboutUs'));
 const ServiceSection = lazy(() => import('../../layout/HomePage/ServiceSection'));
+const ContactUsButton = lazy(() => import('../../UI/ContactUsButton'));
 
 const HomePage = () => {
     return (
@@ -14,6 +15,7 @@ const HomePage = () => {
                 </Suspense>
                 <Suspense fallback={<div>Loading Hero...</div>}>
                     <Hero />
+                    <ContactUsButton />
                 </Suspense>
             </div>
             <div id="aboutUs" className="bg-gray-200">

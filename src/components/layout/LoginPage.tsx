@@ -3,6 +3,7 @@ import { FaUser, FaLock } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import * as Components from '../../components';
 import { api } from '../../services/api';
+import ContactUsButton from '../UI/ContactUsButton'
 
 interface LoginPageProps {
   staffLogin?: boolean;
@@ -11,6 +12,7 @@ interface LoginPageProps {
 const LoginPage: React.FC<LoginPageProps> = ({ staffLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [failedLogin,setFailedLogin] = useState(false);
 
   const navigate = useNavigate();
 
@@ -51,12 +53,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ staffLogin }) => {
     const response = await api.login(formData);
     if (response.status === 200) {
       alert('Login Successful');
-
+      setFailedLogin(false);
       // After successful login, re-run the user fetch and redirection logic.
       await fetchAndRedirectUser();
     } else {
-      alert(`Login Failed,${response.message}`);
+      alert(`Login Failed, error : ${response.message}`);
       console.error(response.message);
+      setFailedLogin(true);
     }
   };
 
@@ -64,6 +67,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ staffLogin }) => {
     <div className='text-white bg-gradient-to-br from-green-700 to-green-500 min-h-screen'>
       {/* Optionally show the header if not on staffLogin page */}
       {staffLogin !== true && <Components.Header customerMode={true} />}
+      {failedLogin&&(
+        <div className='animate-pulse'>
+          <ContactUsButton />
+        </div>
+      )}
       <div className="flex items-center justify-center min-h-screen">
         <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-lg">
           <img src='./Sakura_Spa_Logo.png' className='mx-auto w-40 h-auto' alt='Logo' />

@@ -121,9 +121,9 @@ const InvoicePDF:React.FC<InvoicePDFProps> = ({ transaction }) => (
         <View style={styles.rightSection}>
           <Image style={styles.logo} src={Logo} />
           <Text style={styles.title}>Sakura Spa</Text>
-          <Text>Your Business Address</Text>
-          <Text>Banyuwangi, Indonesia, Postal</Text>
-          <Text>Phone: +62 812-3456-7890</Text>
+          <Text>Perumahan Pelindung Alam No 2</Text>
+          <Text>Jalan Kertanegara, Kebalenan, Banyuwangi</Text>
+          <Text>Phone: +62 851 8326 6288</Text>
         </View>
       </View>
 
