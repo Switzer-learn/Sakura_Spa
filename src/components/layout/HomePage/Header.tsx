@@ -45,17 +45,17 @@ const Header:React.FC<Header> = ({customerMode}) => {
   return (
     <header className="px-4 md:px-10 flex justify-between items-center py-4 relative">
       {/* Left Logo */}
-      <div className="flex items-center gap-2">
+      <Link to='/' className="flex items-center gap-2">
         <img src="./Sakura_Spa_Logo.png" alt="logo" className="size-10" />
         <span className="text-2xl font-bold">Sakura Spa</span>
-      </div>
+      </Link>
 
       {/* Desktop Nav */}
       <nav className="hidden md:flex items-center gap-6">
         <Link to="/" className="hover:text-blue-500 transition">Home</Link>
         <a href="#aboutUs" className="hover:text-blue-500 transition">About Us</a>
         <a href="#serviceSection" className="hover:text-blue-500 transition">Our Service</a>
-        <button className="hover:text-blue-500 transition">Contact Us</button>
+        {/*<button className="hover:text-blue-500 transition">Contact Us</button>*/}
       </nav>
 
       {/* Auth Buttons (Desktop) */}
@@ -85,7 +85,7 @@ const Header:React.FC<Header> = ({customerMode}) => {
         className="md:hidden text-white"
         aria-label="Toggle Menu"
       >
-        {isOpen ? <FaTimes size={28} /> : <FaBars size={28} />}
+        {isOpen ? <FaTimes size={28}/> : <FaBars size={28}/>}
       </button>
 
       {/* Mobile Menu Dropdown */}
@@ -94,7 +94,7 @@ const Header:React.FC<Header> = ({customerMode}) => {
           <Link to="/" className="hover:text-blue-500 transition" onClick={() => setIsOpen(false)}>Home</Link>
           <a href="#aboutUs" className="hover:text-blue-500 transition" onClick={() => setIsOpen(false)}>About Us</a>
           <a href="#serviceSection" className="hover:text-blue-500 transition" onClick={() => setIsOpen(false)}>Our Service</a>
-          <button className="hover:text-blue-500 transition" onClick={() => setIsOpen(false)}>Contact Us</button>
+          {/*<button className="hover:text-blue-500 transition" onClick={() => setIsOpen(false)}>Contact Us</button>*/}
           {user ? (
             <>
               <div className='flex flex-col'><span className="text-lg">Welcome, </span> <p>{user}</p></div>
