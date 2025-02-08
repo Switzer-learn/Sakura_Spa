@@ -48,7 +48,7 @@ const EmployeeRegistration: React.FC<EmployeeRegistrationProps> = ({ adminLogin 
       if (response.status === 200) {
         alert("New Employee successfully registered");
       } else {
-        alert('Register Failed')
+        alert(`Register Failed, ${response}`)
         console.log(response.message);
       }
     } catch (error: any) {
