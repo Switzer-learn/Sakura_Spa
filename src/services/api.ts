@@ -344,13 +344,13 @@ getCurrentUser: async () => {
       .from('employees')
       .upsert(
           { 
-            full_name: formData.fullName,
+            full_name: formData.full_name,
             address: formData.address,
-            phone_number: formData.phoneNum,
+            phone_number: formData.phone_number,
             age: formData.age,
-            id_card_num: formData.KTP,
+            id_card_num: formData.id_card_num,
             salary: formData.salary,
-            username: formData.userName,
+            username: formData.email,
             role: formData.role
           }
         , 
