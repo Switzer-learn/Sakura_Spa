@@ -65,7 +65,7 @@ export const api = {
 
 forgotPassword:async(email:string)=>{
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: "https://sakura-spa-seven.vercel.app/reset-password", // Customize this
+    redirectTo: "https://sakuraspabwi.com/reset-password", // Customize this
   });
 
   if (error) {
