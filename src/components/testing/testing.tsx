@@ -1,43 +1,15 @@
 import React, { useEffect, useState } from "react";
-import * as Components from "../../components";
 import { api } from "../../services/api";
-import { useNavigate } from "react-router-dom";
 
 interface CustomerOrderFormProps {
   walkIn: boolean;
   adminPage: boolean;
 }
 
-const Testing: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage }) => {
-  const [dates, setDates] = useState("");
-  const [time, setTime] = useState("");
-  const [customerName, setCustomerName] = useState("");
-  const [customerId, setCustomerId] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [email, setEmail] = useState("");
+const Testing: React.FC<CustomerOrderFormProps> = () => {
   const [originalServices, setOriginalServices] = useState<any[]>([]);
   const [serviceNames, setServiceNames] = useState<string[]>([]);
   const [selectedServices, setSelectedServices] = useState<{ service: string; duration: number }[]>([]);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    async function fetchCurrentUser() {
-      const response = await api.getCurrentUser();
-      if (response) {
-        setCustomerId(response.id);
-        const customerData = await api.getSpecificCustomer(response.id);
-        if (customerData) {
-          setCustomerName(customerData.data.customer_name);
-          setPhoneNumber(customerData.data.phone_number);
-        }
-      } else {
-        navigate("/Login");
-      }
-    }
-    if (!walkIn) {
-      fetchCurrentUser();
-    }
-  }, [navigate, walkIn]);
 
   useEffect(() => {
     const fetchServicesData = async () => {
@@ -66,39 +38,9 @@ const Testing: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage }) => {
     setSelectedServices(prev => prev.filter((_, i) => i !== index));
   };
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    let walkInCustomerId = 0;
-    if (walkIn) {
-      const customerData = { customer_name: customerName, phone_number: phoneNumber, email };
-      const response = await api.addWalkInCustomer(customerData);
-      if (response.status !== 200 || !response.data[0]?.auth_user_id) {
-        alert("Failed to retrieve customer ID.");
-        return;
-      }
-      walkInCustomerId = response.data[0].auth_user_id;
-    }
-
-    const formData = {
-      customer_id: walkIn ? walkInCustomerId : customerId,
-      customer_name: customerName,
-      phone_number: phoneNumber,
-      date: dates,
-      time,
-      services: selectedServices,
-    };
-    const response = await api.addOrders(formData);
-    if (response.status === 200) {
-      alert("Scheduling berhasil");
-      navigate(walkIn ? "/AdminPage" : "/");
-    } else {
-      alert("Scheduling gagal, coba lagi.");
-    }
-  }
-
   return (
     <div className="w-screen bg-green-700">
-      <form className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-6" onSubmit={handleSubmit}>
+      
         <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">Customer Scheduling Form</h1>
         <div>
           {selectedServices.map((item, index) => (
@@ -119,7 +61,7 @@ const Testing: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage }) => {
           <button type="button" className="bg-green-500 text-white rounded-lg shadow-lg font-bold p-2 mt-2" onClick={handleAddService}>+ Add Service</button>
         </div>
         <button type="submit" className="w-full py-3 mt-6 bg-blue-600 text-white font-semibold rounded-xl">Submit</button>
-      </form>
+      
     </div>
   );
 };
