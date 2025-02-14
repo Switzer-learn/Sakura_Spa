@@ -309,7 +309,7 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
                     
                   </div>
                   <div>
-                    <button type="button" className="border rounded-md bg-green-500 hover:bg-green-600 px-2 py-1">+</button>
+                    <button type="button" onClick={()=>console.log('clicked')} className="border rounded-md bg-green-500 hover:bg-green-600 px-2 py-1">+</button>
                   </div>
                   {finalService.length > 0 && finalService[0]?.service_price && (
                     <span className="text-gray-700">

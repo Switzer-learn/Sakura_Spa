@@ -116,7 +116,7 @@ const Testing: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage }) => {
               <button type="button" className="bg-red-500 text-white p-2" onClick={() => handleRemoveService(index)}>Remove</button>
             </div>
           ))}
-          <button type="button" className="bg-green-500 text-white p-2 mt-2" onClick={handleAddService}>+ Add Service</button>
+          <button type="button" className="bg-green-500 text-white rounded-lg shadow-lg font-bold p-2 mt-2" onClick={handleAddService}>+ Add Service</button>
         </div>
         <button type="submit" className="w-full py-3 mt-6 bg-blue-600 text-white font-semibold rounded-xl">Submit</button>
       </form>
