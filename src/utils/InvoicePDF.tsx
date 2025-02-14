@@ -45,9 +45,9 @@ const styles = StyleSheet.create({
 
   watermark: {
     position: "absolute",
-    top: "40%",
+    top: "60%",
     left: "50%",
-    transform: "translate(-50%, -50%)", // Centers the watermark
+    transform: "translate(150%, 150%)", // Centers the watermark
     width: 300,
     height: 300,
     opacity: 0.2 // 20% opacity

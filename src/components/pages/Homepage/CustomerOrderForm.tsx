@@ -186,7 +186,8 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
           <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">
             Customer Scheduling Form
           </h1>
-          <div className="flex flex-col sm:flex-row gap-6">
+          <div className="flex md:flex-col gap-6 border">
+            <div className='flex gap-2 w-full mx-auto border-2'>
             <div className="w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4">
               <span className="text-xl font-semibold mb-4 text-gray-700">Personal Information</span>
               <div className="flex flex-col">
@@ -221,6 +222,7 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
                 )}
               </div>
             </div>
+            
             <div className="w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4">
               <span className="text-xl font-semibold mb-4 text-gray-700">Schedule</span>
               <div className="flex flex-col gap-4">
@@ -255,12 +257,23 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
                       ))}
                   </select>
                 </div>
+              </div>
+            </div>
+            </div>
+            <div>
+              <div>
                 <div className="flex flex-col">
-                  <label className="font-medium text-gray-700 mb-2">Service</label>
+                  <div className="grid grid-cols-4 mx-2">
+                    <label className="font-medium text-gray-700 mb-2">Service</label>
+                    <label className="font-medium text-gray-700 mb-2">Duration</label>
+                    <label className="font-medium text-gray-700 mb-2">Harga</label>
+                    <label className="font-medium text-gray-700 mb-2">Hapus</label>
+                  </div>
+                  <div className="grid grid-cols-4 ms-2">
                   <select
                     onChange={handleSelectedService}
                     value={selectedService || ""}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="px-3 py-2 border border-gray-300 rounded-md"
                   >
                     <option value="" disabled>
                       Select your option
@@ -271,16 +284,10 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
                       </option>
                     ))}
                   </select>
-                  {treatmentDescription && (
-                    <span className="my-2 text-gray-700">
-                      Description: {treatmentDescription}
-                    </span>
-                  )}
-                  <label className="font-medium text-gray-700 mb-2">Duration</label>
                   <select
                     onChange={handleDurationChange}
                     value={selectedServiceDuration || ""}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    className="px-3 py-2 border border-gray-300 rounded-md"
                   >
                     <option value="" disabled>
                       Select your option
@@ -291,6 +298,19 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
                       </option>
                     ))}
                   </select>
+                  <span className="my-2 text-gray-700">Rp.-----,-</span>
+                  </div>
+                  <div className='flex justify-between'>
+                    {treatmentDescription && (
+                      <span className="my-2 text-gray-700">
+                        Description: {treatmentDescription}
+                      </span>
+                    )}
+                    
+                  </div>
+                  <div>
+                    <button type="button" className="border rounded-md bg-green-500 hover:bg-green-600 px-2 py-1">+</button>
+                  </div>
                   {finalService.length > 0 && finalService[0]?.service_price && (
                     <span className="text-gray-700">
                       Price: Rp.{formatPrice(finalService[0].service_price)},-

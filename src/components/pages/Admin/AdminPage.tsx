@@ -13,7 +13,8 @@ const CashierPage = lazy(() => import("../../layout/Admin/CashierPage"));
 const TherapistSchedule = lazy(() => import("../../layout/Admin/TherapistSchedule"));
 const CustomerOrderForm = lazy(() => import("../../pages/Homepage/CustomerOrderForm"));
 const CustomerList = lazy(() => import("../../layout/Admin/CustomerList"));
-const ServiceList = lazy(()=> import("../../layout/Admin/ServiceList"))
+const ServiceList = lazy(()=> import("../../layout/Admin/ServiceList"));
+const Testing = lazy(()=> import('../../testing/testing'));
 
 
 const AdminPage: React.FC = () => {
@@ -66,7 +67,7 @@ const AdminPage: React.FC = () => {
       case "customerList":
         return <CustomerList />;
       default:
-        return <CashierPage />;
+        return <Testing walkIn={true} adminPage={true} />;
     }
   };
 

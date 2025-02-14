@@ -44,6 +44,7 @@ export default function ServiceList() {
           id: data.service_id || index,
         }))
       );
+      console.log(serviceData);
     } catch (error) {
       console.error("Failed to fetch services:", error);
     }
