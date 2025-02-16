@@ -176,7 +176,7 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
 
   if (loading) {
     return (
-      <div className="flex flex-col justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center max-h-screen overflow-y-auto">
         <img
           src="./Sakura_Spa_Logo.png"
           className="animate-pulse size-52 flex my-auto mx-auto"

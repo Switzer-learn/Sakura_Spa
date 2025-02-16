@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { api } from "../../services/api";
 
@@ -32,6 +33,7 @@ const CustomerServiceSelection: React.FC<CustomerServiceSelectionProps> = ({ onF
     const newTotal = selectedServices.reduce((acc, curr) => acc + curr.price, 0);
     setTotalAmount(newTotal);
     onFetchService(selectedServices, newTotal);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedServices]);
 
   const handleServiceChange = (index: number, value: string) => {
@@ -75,7 +77,7 @@ const CustomerServiceSelection: React.FC<CustomerServiceSelectionProps> = ({ onF
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 max-h-40 overflow-y-auto">
       <div>
         <div className="grid grid-cols-4 text-lg font-semibold text-center">
           <span>Service</span>
