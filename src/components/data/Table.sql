@@ -53,8 +53,8 @@ CREATE TABLE transactions (
     transaction_id VARCHAR(20) PRIMARY KEY,
     customer_id VARCHAR REFERENCES customers(auth_user_id) ON DELETE CASCADE, -- Deletes orders if customer is removed
     schedule TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    service_id INT REFERENCES services(service_id) ON DELETE CASCADE, -- Ensures service consistency
-    duration NUMERIC CHECK (duration > 0),
+    --service_id INT REFERENCES services(service_id) ON DELETE CASCADE, -- Ensures service consistency
+    --duration NUMERIC CHECK (duration > 0),
     therapist_id INT REFERENCES employees(employee_id) ON DELETE SET NULL, -- Keeps transaction even if therapist leaves
     paid BOOLEAN DEFAULT FALSE,
     amount NUMERIC(10, 2) CHECK (amount >= 0) DEFAULT 0, -- Ensures non-negative amount
@@ -95,6 +95,43 @@ values
 ('Eye Lash',0,125000,'By Order Service',''),
 ('Brow Bomber',0,125000,'By Order Service',''),
 ('Lash Lift',0,125000,'By Order Service','');
+
+CREATE OR REPLACE FUNCTION get_transaction_services()
+RETURNS TABLE (
+    transaction_id VARCHAR,
+    amount NUMERIC,
+    paid BOOLEAN,
+    schedule TIMESTAMP,
+    payment_method TEXT,
+    customer_name VARCHAR,
+    customer_phone VARCHAR,
+    therapist_name VARCHAR,
+    service_name VARCHAR,
+    service_price NUMERIC,
+    service_duration NUMERIC
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        ts.transaction_id,
+        t.amount,
+        t.paid,
+        t.schedule,
+        t.payment_method,
+        c.customer_name,
+        c.phone_number AS customer_phone,
+        e.full_name AS therapist_name,
+        s.service_name,
+        s.service_price,
+        s.service_duration
+    FROM transaction_service ts
+    LEFT JOIN transactions t ON ts.transaction_id = t.transaction_id
+    LEFT JOIN customers c ON t.customer_id = c.auth_user_id
+    LEFT JOIN employees e ON t.therapist_id = e.employee_id
+    LEFT JOIN services s ON ts.service_id = s.service_id;
+END;
+$$ LANGUAGE plpgsql;
+
 
 --INSERT INTO employees (full_name, address, phone_number, age, id_card_num, salary, username, role)
 --VALUES

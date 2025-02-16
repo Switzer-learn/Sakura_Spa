@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     display: "flex", 
     flexDirection: "column", 
     height: "100%",
-    width:"100%",
+    width: "100%",
     position: "relative" // Allows watermark positioning
   },
 
@@ -23,12 +23,12 @@ const styles = StyleSheet.create({
 
   leftSection: { 
     flexDirection: "column", 
-    width: "50%" ,
-    justifyContent: 'center',
+    width: "50%",
+    justifyContent: "center",
   },
 
-  leftSectionHeader:{
-    fontSize: '15',
+  leftSectionHeader: {
+    fontSize: 15,
   },
 
   rightSection: { 
@@ -45,9 +45,9 @@ const styles = StyleSheet.create({
 
   watermark: {
     position: "absolute",
-    top: "60%",
+    top: "50%",
     left: "50%",
-    transform: "translate(150%, 150%)", // Centers the watermark
+    transform: "translate(-150, -150)", // Centers the watermark
     width: 300,
     height: 300,
     opacity: 0.2 // 20% opacity
@@ -82,6 +82,13 @@ const styles = StyleSheet.create({
     textAlign: "center" 
   },
 
+  tableTotal:{
+    flexDirection:"row",
+    borderBottomWidth:1,
+    borderBottomColor:"#ddd",
+    marginTop:30,
+  },
+
   footer: { 
     marginTop: "auto", 
     padding: 10, 
@@ -90,19 +97,24 @@ const styles = StyleSheet.create({
   }
 });
 
+interface Service {
+  service_name: string;
+  service_price: number;
+  service_duration: number;
+}
 
 interface InvoicePDFProps {
   transaction: {
     transaction_id: string;
     customer_name: string;
-    service_name: string;
-    service_price: number;
-    service_duration: number;
+    services: Service[];
+    amount: number;
+    total_duration: number;
     payment_method: string;
   };
 }
 
-const InvoicePDF:React.FC<InvoicePDFProps> = ({ transaction }) => (
+const InvoicePDF: React.FC<InvoicePDFProps> = ({ transaction }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       {/* Watermark */}
@@ -112,9 +124,9 @@ const InvoicePDF:React.FC<InvoicePDFProps> = ({ transaction }) => (
       <View style={styles.header}>
         {/* Left: Invoice Info */}
         <View style={styles.leftSection}>
-          <Text style={styles.leftSectionHeader}>Nama Customer : {transaction.customer_name}</Text>
+          <Text style={styles.leftSectionHeader}>Nama Customer: {transaction.customer_name}</Text>
           <Text style={styles.leftSectionHeader}>Invoice #: {transaction.transaction_id}</Text>
-          <Text style={styles.leftSectionHeader}>Tanggal : {new Date().toLocaleDateString()} </Text>
+          <Text style={styles.leftSectionHeader}>Tanggal: {new Date().toLocaleDateString()}</Text>
         </View>
 
         {/* Right: Company Info + Logo */}
@@ -137,11 +149,21 @@ const InvoicePDF:React.FC<InvoicePDFProps> = ({ transaction }) => (
         </View>
 
         {/* Table Data */}
-        <View style={styles.tableRow}>
-          <Text style={styles.tableCell}>{transaction.service_name}</Text>
-          <Text style={styles.tableCell}>{transaction.service_duration} min</Text>
-          <Text style={styles.tableCell}>Rp {transaction.service_price.toLocaleString()}</Text>
+        {transaction.services.map((service, index) => (
+          <View key={index} style={styles.tableRow}>
+            <Text style={styles.tableCell}>{service.service_name}</Text>
+            <Text style={styles.tableCell}>{service.service_duration} min</Text>
+            <Text style={styles.tableCell}>Rp {service.service_price.toLocaleString()}</Text>
+          </View>
+        ))}
+
+        {/* Table Footer (Total) */}
+        <View style={[styles.tableTotal, { backgroundColor: "#f0f0f0", fontWeight: "bold" }]}>
+          <Text style={styles.tableCell}>Total</Text>
+          <Text style={styles.tableCell}>{transaction.total_duration?.toLocaleString() ?? "0"} min</Text>
+          <Text style={styles.tableCell}>Rp {transaction.amount?.toLocaleString() ?? "0"}</Text>
         </View>
+
       </View>
 
       {/* FOOTER */}

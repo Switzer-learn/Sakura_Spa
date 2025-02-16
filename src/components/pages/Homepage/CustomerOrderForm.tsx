@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import * as Components from "../../../components";
 import { api } from "../../../services/api";
 import { useNavigate } from "react-router-dom";
-import Testing from "../../testing/testing"
+import CustomerServiceSelection from "../../testing/CustomerServiceSelection";
 
 interface CustomerOrderFormProps {
   walkIn: boolean;
@@ -16,23 +16,10 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
   const [customerId, setCustomerId] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState(""); // New email state for walkIn users
-  const [originalServices, setOriginalServices] = useState<any[]>([]);
-  const [serviceName, setServiceName] = useState<string[]>([]);
-  const [serviceDuration, setServiceDuration] = useState<any[]>([]);
-  const [selectedService, setSelectedService] = useState<string>("");
-  const [selectedServiceDuration, setSelectedServiceDuration] = useState<number>();
-  const [filteredData, setFilteredData] = useState<any[]>([]);
-  const [treatmentDescription, setTreatmentDescription] = useState<string>("");
-  const [finalService, setFinalService] = useState<any[]>([]);
+  const [service, setService] = useState<{ service: string; duration: number; price: number; service_id: number }[]>([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "decimal",
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
 
   useEffect(() => {
     async function fetchCurrentUser() {
@@ -43,8 +30,6 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
         if (customerData) {
           setCustomerName(customerData.data.customer_name);
           setPhoneNumber(customerData.data.phone_number);
-          // Optionally, if the non-walkIn user has an email, set it here.
-          // setEmail(customerData.data.email);
         }
       } else {
         navigate("/Login");
@@ -56,66 +41,46 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
     setLoading(false);
   }, [navigate, walkIn]);
 
-  useEffect(() => {
-    const fetchServicesData = async () => {
-      const response = await api.getServices();
-      const data: any = Array.from(new Set(response?.map((service) => service.service_name)));
-      setOriginalServices(response || []);
-      setServiceName(data || []);
-    };
-    fetchServicesData();
-  }, []);
-
-  useEffect(() => {
-    if (!originalServices.length) return;
-    const data = originalServices.filter((service) => service.service_name === selectedService);
-    setFilteredData(data);
-    setServiceDuration(data);
-    if (data.length) {
-      setSelectedServiceDuration(data[0].service_duration);
-      setTreatmentDescription(data[0].keterangan);
-    }
-  }, [selectedService, originalServices]);
-
-  useEffect(() => {
-    const data = filteredData.filter((service) => service.service_duration === selectedServiceDuration);
-    setFinalService(data);
-  }, [selectedServiceDuration, filteredData]);
-
-  function handleSelectedService(e: React.ChangeEvent<HTMLSelectElement>) {
-    setSelectedService(e.target.value);
-  }
-
-  function handleDurationChange(e: React.ChangeEvent<HTMLSelectElement>) {
-    setSelectedServiceDuration(Number(e.target.value));
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+  
     let walkInCustomerId = 0;
+  
+    // Handle walk-in customer registration
     if (walkIn) {
       const customerData = {
         customer_name: customerName,
         phone_number: phoneNumber,
-        email: email // Include email when inserting a walk-in customer
+        email: email, // Include email when inserting a walk-in customer
       };
-      const response = await api.addWalkInCustomer(customerData);
-      if (response.status !== 200) {
-        alert("Something is wrong");
-        console.log(response);
-        return; // Exit if there's an error
-      } else {
-        if(response.data){
-          if (response.data[0]?.auth_user_id) {
-          walkInCustomerId = response.data[0].auth_user_id;
-        } else {
-          alert("Failed to retrieve customer ID.");
-          return;
+
+      const getCustomerResponse = await api.getCustomers();
+      console.log(getCustomerResponse)
+      if(getCustomerResponse.status===200){
+        const existingCustomer = getCustomerResponse.data.find((customer:any) => customer.email === customerData.email || customer.phone_number === customerData.phone_number);
+        if (!existingCustomer) {
+          const response = await api.addWalkInCustomer(customerData);
+          if (response.status !== 200) {
+            alert("Something is wrong");
+            console.log(response);
+            return; // Exit if there's an error
+          }
+  
+          if (response.data && response.data[0]?.auth_user_id) {
+            walkInCustomerId = response.data[0].auth_user_id;
+          } else {
+            alert("Failed to retrieve customer ID.");
+            return;
+          }
+        }else{
+          walkInCustomerId = existingCustomer.auth_user_id
         }
-        }
-        
       }
+  
+      
     }
+  
+    // Insert transaction into `transactions` table
     const formData = {
       customer_id: walkIn ? walkInCustomerId : customerId,
       customer_name: customerName,
@@ -123,25 +88,52 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
       date: dates,
       therapist_id: null,
       paid: false,
+      amount: total,
       time,
-      service: finalService.length ? finalService[0] : {},
     };
-    const response = await api.addOrders(formData);
-
-    if (response.status === 200) {
-      if(walkIn){
-        alert("Scheduling berhasil");
+  
+    console.log("Customer Data:", formData);
+    console.log("Selected Service:", service);
+    console.log("Total:", total);
+  
+    const transactionResponse = await api.addOrders(formData);
+  
+    if (transactionResponse.status === 200 && transactionResponse.data.length > 0) {
+      const transactionId = transactionResponse.data[0].transaction_id;
+      
+      // Insert selected services into `transaction_services` table
+      const serviceInsertPromises = service.map((item) =>
+        api.addTransactionService({
+          transaction_id: transactionId,
+          service_id: item.service_id, // Ensure service_id is sent correctly
+        })
+      );
+  
+      const serviceResponses = await Promise.all(serviceInsertPromises);
+  
+      // Check if all service insertions were successful
+      const hasErrors = serviceResponses.some((res) => res.status !== 200);
+  
+      if (hasErrors) {
+        alert("Scheduling failed, please try again or contact us via WhatsApp.");
+        console.log("service error ",serviceResponses);
+        return;
+      }
+  
+      // Success message
+      if (walkIn) {
+        alert("Scheduling successful!");
         navigate("/AdminPage");
-      }else{
-        alert("Scheduling berhasil, Terima Kasih, kami tunggu kedatangan anda");
+      } else {
+        alert("Scheduling successful! Thank you, we look forward to seeing you.");
         navigate("/");
       }
-      
     } else {
-      alert("Scheduling gagal, coba lagi atau hubungi kami melalui whatsapp");
-      console.log(response);
+      alert("Scheduling failed, please try again or contact us via WhatsApp.");
+      console.log("transaction error ",transactionResponse);
     }
   }
+  
 
   // Restrict past dates
   const today = new Date().toISOString().split("T")[0];
@@ -155,6 +147,13 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
     }
     return timeSlots;
   };
+
+  const handleFetchService = (services:{ service: string; duration: number; price: number; service_id: number }[],newTotal:number) => {
+    console.log(services);
+    console.log('Total',newTotal);
+    setTotal(newTotal);
+    setService(services);
+  }
 
   // Valid time slots based on date
   const validTimeSlots = generateTimeSlots();
@@ -180,7 +179,7 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
   }
 
   return (
-    <div className="w-screen bg-green-700">
+    <div className=" bg-green-700">
       {adminPage === false && <Components.Header customerMode={true} />}
       <div id="customerOrderForm" className="flex flex-col items-center h-screen bg-green-700 p-4">
         <form className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-6" onSubmit={handleSubmit}>
@@ -261,66 +260,7 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
               </div>
             </div>
             </div>
-            <div>
-              <div>
-                <div className="flex flex-col">
-                  <div className="grid grid-cols-4 mx-2">
-                    <label className="font-medium text-gray-700 mb-2">Service</label>
-                    <label className="font-medium text-gray-700 mb-2">Duration</label>
-                    <label className="font-medium text-gray-700 mb-2">Harga</label>
-                    <label className="font-medium text-gray-700 mb-2">Hapus</label>
-                  </div>
-                  <div className="grid grid-cols-4 ms-2">
-                  <select
-                    onChange={handleSelectedService}
-                    value={selectedService || ""}
-                    className="px-3 py-2 border border-gray-300 rounded-md"
-                  >
-                    <option value="" disabled>
-                      Select your option
-                    </option>
-                    {serviceName.map((order, index) => (
-                      <option key={index} value={order}>
-                        {order}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    onChange={handleDurationChange}
-                    value={selectedServiceDuration || ""}
-                    className="px-3 py-2 border border-gray-300 rounded-md"
-                  >
-                    <option value="" disabled>
-                      Select your option
-                    </option>
-                    {serviceDuration.map((order, index) => (
-                      <option key={index} value={order.service_duration}>
-                        {order.service_duration} minutes
-                      </option>
-                    ))}
-                  </select>
-                  <span className="my-2 text-gray-700">Rp.-----,-</span>
-                  </div>
-                  <div className='flex justify-between'>
-                    {treatmentDescription && (
-                      <span className="my-2 text-gray-700">
-                        Description: {treatmentDescription}
-                      </span>
-                    )}
-                    
-                  </div>
-                  <Testing />
-                  <div>
-                    <button type="button" onClick={()=>console.log('clicked')} className="border rounded-md bg-green-500 hover:bg-green-600 px-2 py-1">+</button>
-                  </div>
-                  {finalService.length > 0 && finalService[0]?.service_price && (
-                    <span className="text-gray-700">
-                      Price: Rp.{formatPrice(finalService[0].service_price)},-
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+            <CustomerServiceSelection onFetchService={handleFetchService} />
           </div>
           <button
             type="submit"

@@ -152,14 +152,16 @@ export default function ServiceList() {
       </h1>
 
       {/* Add Service Button */}
-      <Button
-        variant="contained"
-        color="success"
-        onClick={handleAdd}
-        sx={{ marginBottom: 2 }}
-      >
-        Add New Service
-      </Button>
+      <div className="flex justify-end">
+        <Button
+          variant="contained"
+          color="success"
+          onClick={handleAdd}
+          sx={{ marginBottom: 2 }}
+        >
+          Add New Service
+        </Button>
+      </div>
 
       <Paper
         sx={{

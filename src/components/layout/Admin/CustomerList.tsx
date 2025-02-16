@@ -13,7 +13,7 @@ export default function CustomerList() {
       const customerData: any[] = (await api.getCustomers()) || [];
 
       // Preprocess rows immediately after fetching
-      const processedRows = customerData.map((data, index) => ({
+      const processedRows = customerData.data.map((data, index) => ({
         ...data,
         id: data.customer_id || index,
       }));

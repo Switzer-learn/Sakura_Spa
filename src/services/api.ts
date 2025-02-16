@@ -16,7 +16,7 @@ function generateUserId(){
   const date = new Date();
   const month = date.getMonth()+1;
   const randNum = Math.floor(Math.random()*1000)
-  let userId = 'WALKIN-'+date.getFullYear()+month+date.getDate()+randNum;
+  const userId = 'WALKIN-'+date.getFullYear()+month+date.getDate()+randNum;
   return userId;
 }
 
@@ -24,7 +24,7 @@ function generateTransactionId(){
   const date = new Date();
   const month = date.getMonth()+1;
   const randNum = Math.floor(Math.random()*1000)
-  let trxId = 'ORD-'+date.getFullYear()+month+date.getDate()+randNum;
+  const trxId = 'ORD-'+date.getFullYear()+month+date.getDate()+randNum;
   return trxId;
 }
 
@@ -166,7 +166,7 @@ getCurrentUser: async () => {
 
   // Customers
   getCustomers: async () => {
-    let { data, error } = await supabase
+    const { data, error } = await supabase
       .from('customers')
       .select('*');
 
@@ -174,12 +174,12 @@ getCurrentUser: async () => {
       console.error('Error fetching customers:', error);
       return null;
     }
-    return data;
+    return {status:200,data:data};
   },
 
   //customer
   getSpecificCustomer:async(id:string)=>{
-    let {data,error} = await supabase
+    const {data,error} = await supabase
       .from('customers')
       .select('*')
       .eq('auth_user_id',id)
@@ -194,7 +194,7 @@ getCurrentUser: async () => {
   //getInformation
   //Employee
   getEmployees: async()=> {
-    let { data,error } = await supabase.from('employees').select('*');
+    const { data,error } = await supabase.from('employees').select('*');
     if(error){
       console.error('Error fetching Employees data : ', error);
       return null
@@ -203,7 +203,7 @@ getCurrentUser: async () => {
   },
 
   getTherapist: async()=> {
-    let { data,error } = await supabase.from('employees').select('*').eq('role','Therapist');
+    const { data,error } = await supabase.from('employees').select('*').eq('role','Therapist');
     if(error){
       console.error('Error fetching Employees data : ', error);
       return null
@@ -309,7 +309,7 @@ getCurrentUser: async () => {
   },
   //Inventory
   getInventory: async()=> {
-    let { data,error } = await supabase.from('inventory').select('*');
+    const { data,error } = await supabase.from('inventory').select('*');
     if(error){
       console.error('Error fetching inventory data : ', error);
       return null
@@ -318,7 +318,7 @@ getCurrentUser: async () => {
   },
   //Transaction
   getTransactions: async () => {
-    let { data, error } = await supabase.rpc('get_transaction_details');
+    const { data, error } = await supabase.rpc('get_transaction_services');
     if (error) {
       console.error('Error fetching transaction details:', error);
       return null;
@@ -329,7 +329,7 @@ getCurrentUser: async () => {
 
   //services
   getServices: async()=> {
-    let { data,error } = await supabase.from('services').select('*');
+    const { data,error } = await supabase.from('services').select('*');
     if(error){
       console.error('Error fetching inventory data : ', error);
       return null
@@ -405,7 +405,7 @@ getCurrentUser: async () => {
 
   //Order / transactions
   addOrders : async(formData:any) =>{
-    const {customer_id,therapist_id,paid,date,time,service} = formData;
+    const {customer_id,therapist_id,paid,date,time,amount} = formData;
       const { data, error } = await supabase
         .from('transactions')
         .insert(
@@ -413,11 +413,9 @@ getCurrentUser: async () => {
               transaction_id : generateTransactionId(),
               customer_id : customer_id,
               schedule : date+' '+time,
-              service_id : service.service_id ,
-              duration : service.service_duration,
               therapist_id : therapist_id,
               paid : paid,
-              amount : service.service_price
+              amount : amount
             }
         )
         .select(); // Fetching the data after insert
@@ -427,6 +425,23 @@ getCurrentUser: async () => {
       }
       return {data:data,status:200};
   },
+
+  addTransactionService: async (inputData: { transaction_id: number; service_id: number }) => {
+    const { transaction_id, service_id } = inputData;
+    console.log(transaction_id, "  ", service_id);
+    const { data, error } = await supabase
+      .from("transaction_service")
+      .insert([{ transaction_id, service_id }]) // Fix: Use an array for bulk insert
+      .select(); // Fetch inserted data
+  
+    if (error) {
+      console.error("Error inserting transaction service:", error);
+      return { status: 400, message: error };
+    }
+  
+    return { data, status: 200 };
+  },
+  
 
   addService:async(input:any)=>{
     const {service_name,service_duration,service_price,service_type,description} = input;
@@ -478,7 +493,7 @@ getCurrentUser: async () => {
 
   setTherapist:async(input:any)=>{
     const {therapist_id,transaction_id} = input;
-    let {error} = await supabase
+    const {error} = await supabase
       .from('transactions')
       .update({
         therapist_id:therapist_id

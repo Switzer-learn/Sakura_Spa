@@ -1,13 +1,19 @@
 import React from "react";
 import * as Components from "../../../components";
-import { downloadInvoice } from "../../../utils/InvoicePDF"; // adjust the path as needed
+import { downloadInvoice } from "../../../utils/InvoicePDF"; // Adjust path as needed
 import { api } from '../../../services/api'
 
-interface PaymentPageProps {
-  customer_name: string;
+interface Service {
   service_name: string;
   service_price: number;
   service_duration: number;
+}
+
+interface PaymentPageProps {
+  customer_name: string;
+  services: Service[];
+  total_price: number;
+  total_duration: number;
   transaction_id: string;
   open: boolean;
   onClose: () => void;
@@ -22,38 +28,40 @@ const formatPrice = (price: number) => {
 
 const PaymentPage: React.FC<PaymentPageProps> = ({
   customer_name,
-  service_name,
-  service_price,
-  service_duration,
+  services,
+  total_price,
+  total_duration,
   transaction_id,
   open,
   onClose,
 }) => {
   const [paymentMethod, setPaymentMethod] = React.useState<string>("cash");
-
+  console.log(total_price)
   const handleConfirmPayment = async () => {
-
-    // Create a transaction object with all necessary fields for the invoice
+    // Construct a detailed transaction object for the invoice
     const transaction = {
       transaction_id,
       customer_name,
-      service_name,
-      service_price,
-      service_duration,
+      services,
+      total_price,
+      total_duration,
       payment_method: paymentMethod,
     };
 
-    const response = await api.processPayment({transaction_id:transaction_id,paid:true,payment_method:paymentMethod});
-    if(response.status==200){
+    const response = await api.processPayment({
+      transaction_id: transaction_id,
+      paid: true,
+      payment_method: paymentMethod
+    });
+
+    if (response.status === 200) {
       alert('Pembayaran berhasil');
       downloadInvoice(transaction);
       onClose();
-    }else{
+    } else {
       alert('Pembayaran gagal, cek console');
       console.log(response.message);
     }
-    
-    
   };
 
   return (
@@ -69,14 +77,23 @@ const PaymentPage: React.FC<PaymentPageProps> = ({
           <p>
             <strong>Customer:</strong> {customer_name}
           </p>
+
+          <div>
+            <strong>Services:</strong>
+            <ul className="list-disc pl-5">
+              {services.map((service, index) => (
+                <li key={index}>
+                  {service.service_name} - {service.service_duration} min (Rp {formatPrice(service.service_price)})
+                </li>
+              ))}
+            </ul>
+          </div>
+
           <p>
-            <strong>Service:</strong> {service_name}
+            <strong>Total Duration:</strong> {total_duration} min
           </p>
           <p>
-            <strong>Duration:</strong> {service_duration} min
-          </p>
-          <p>
-            <strong>Price:</strong> Rp {formatPrice(service_price)}
+            <strong>Total Price:</strong> Rp {formatPrice(total_price)}
           </p>
 
           <label className="font-medium text-gray-700 mb-2">
