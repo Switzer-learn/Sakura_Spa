@@ -9,6 +9,13 @@ interface CustomerOrderFormProps {
   adminPage: boolean;
 }
 
+interface Customer {
+  customer_name: string;
+  phone_number: string;
+  email: string;
+  auth_user_id: number;
+}
+
 const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage }) => {
   const [dates, setDates] = useState("");
   const [time, setTime] = useState("");
@@ -56,28 +63,28 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
 
       const getCustomerResponse = await api.getCustomers();
       console.log(getCustomerResponse)
-      if(getCustomerResponse.status===200){
-        const existingCustomer = getCustomerResponse.data.find((customer:any) => customer.email === customerData.email || customer.phone_number === customerData.phone_number);
-        if (!existingCustomer) {
-          const response = await api.addWalkInCustomer(customerData);
-          if (response.status !== 200) {
-            alert("Something is wrong");
-            console.log(response);
-            return; // Exit if there's an error
+      if(getCustomerResponse){
+        if(getCustomerResponse.status===200){
+          const existingCustomer = getCustomerResponse.data.find((customer:Customer) => customer.email === customerData.email || customer.phone_number === customerData.phone_number);
+          if (!existingCustomer) {
+            const response = await api.addWalkInCustomer(customerData);
+            if (response.status !== 200) {
+              alert("Something is wrong");
+              console.log(response);
+              return; // Exit if there's an error
+            }
+    
+            if (response.data && response.data[0]?.auth_user_id) {
+              walkInCustomerId = response.data[0].auth_user_id;
+            } else {
+              alert("Failed to retrieve customer ID.");
+              return;
+            }
+          }else{
+            walkInCustomerId = existingCustomer.auth_user_id
           }
-  
-          if (response.data && response.data[0]?.auth_user_id) {
-            walkInCustomerId = response.data[0].auth_user_id;
-          } else {
-            alert("Failed to retrieve customer ID.");
-            return;
-          }
-        }else{
-          walkInCustomerId = existingCustomer.auth_user_id
         }
       }
-  
-      
     }
   
     // Insert transaction into `transactions` table
@@ -97,9 +104,9 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
     console.log("Total:", total);
   
     const transactionResponse = await api.addOrders(formData);
-  
-    if (transactionResponse.status === 200 && transactionResponse.data.length > 0) {
-      const transactionId = transactionResponse.data[0].transaction_id;
+    if(transactionResponse.data){
+      if (transactionResponse.status === 200 && transactionResponse.data.length > 0) {
+      const transactionId = transactionResponse.data[0]?.transaction_id;
       
       // Insert selected services into `transaction_services` table
       const serviceInsertPromises = service.map((item) =>
@@ -132,6 +139,8 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
       alert("Scheduling failed, please try again or contact us via WhatsApp.");
       console.log("transaction error ",transactionResponse);
     }
+    }
+    
   }
   
 

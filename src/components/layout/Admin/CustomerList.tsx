@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
@@ -10,20 +11,31 @@ export default function CustomerList() {
   // Simulate loading data
   useEffect(() => {
     const fetchCustomer = async () => {
-      const customerData: any[] = (await api.getCustomers()) || [];
-
-      // Preprocess rows immediately after fetching
-      const processedRows = customerData.data.map((data, index) => ({
-        ...data,
-        id: data.customer_id || index,
-      }));
-
-      setRows(processedRows);
-      setLoading(false); // Data is now loaded
+      try {
+        const response = await api.getCustomers(); // Await API call
+        if (!response || !response.data) {
+          setRows([]); // Handle cases where no data is returned
+          return;
+        }
+  
+        // Ensure the response is correctly processed
+        const processedRows = response.data.map((data: any, index: number) => ({
+          ...data,
+          id: data.customer_id ?? index, // Use nullish coalescing to ensure ID exists
+        }));
+  
+        setRows(processedRows);
+      } catch (error) {
+        console.error("Error fetching customers:", error);
+        setRows([]); // Fallback in case of error
+      } finally {
+        setLoading(false); // Data is now loaded
+      }
     };
-
+  
     fetchCustomer();
   }, []);
+  
   
   const columns: GridColDef[] = [
     { field: 'customer_id', headerName: 'ID',type:'number'},

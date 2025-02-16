@@ -43,26 +43,32 @@ const PaymentPage: React.FC<PaymentPageProps> = ({
       transaction_id,
       customer_name,
       services,
-      total_price,
+      amount: total_price, // Change total_price to amount
       total_duration,
       payment_method: paymentMethod,
     };
-
-    const response = await api.processPayment({
-      transaction_id: transaction_id,
-      paid: true,
-      payment_method: paymentMethod
-    });
-
-    if (response.status === 200) {
-      alert('Pembayaran berhasil');
-      downloadInvoice(transaction);
-      onClose();
-    } else {
-      alert('Pembayaran gagal, cek console');
-      console.log(response.message);
+  
+    try {
+      const response = await api.processPayment({
+        transaction_id,
+        paid: true,
+        payment_method: paymentMethod,
+      });
+  
+      if (response.status === 200) {
+        alert('Pembayaran berhasil');
+        downloadInvoice(transaction); // Now it matches the expected structure
+        onClose();
+      } else {
+        alert('Pembayaran gagal, cek console');
+        console.log(response.message);
+      }
+    } catch (error) {
+      console.error("Payment processing error:", error);
+      alert("Terjadi kesalahan dalam memproses pembayaran.");
     }
   };
+  
 
   return (
     <Components.Dialog open={open} onOpenChange={onClose}>
