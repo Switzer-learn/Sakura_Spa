@@ -19,7 +19,7 @@ type TransactionCardProps = {
   services: Service[];
   total_duration: number;
   onPayment: () => void;
-  onEdit: (changedData: { therapist_id: string, transaction_id: string }) => void;
+  onEdit: (changedData: { therapist_id: number, transaction_id: string }) => void;
 };
 
 const TransactionCard: React.FC<TransactionCardProps> = ({
@@ -36,6 +36,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
   onEdit,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [therapistOptions, setTherapistOptions] = useState<any[]>([]);
   const [selectedTherapist, setSelectedTherapist] = useState<string | null>(therapist_name);
 
@@ -49,7 +50,8 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
 
   const handleSave = () => {
     if (selectedTherapist) {
-      onEdit({ therapist_id: selectedTherapist, transaction_id });
+      onEdit({ therapist_id: parseInt(selectedTherapist), transaction_id });
+      //console.log(selectedTherapist)
       setIsEditing(false);
     }
   };

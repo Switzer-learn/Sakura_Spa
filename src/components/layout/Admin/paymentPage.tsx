@@ -36,7 +36,7 @@ const PaymentPage: React.FC<PaymentPageProps> = ({
   onClose,
 }) => {
   const [paymentMethod, setPaymentMethod] = React.useState<string>("cash");
-  console.log(total_price)
+  //console.log(total_price)
   const handleConfirmPayment = async () => {
     // Construct a detailed transaction object for the invoice
     const transaction = {
