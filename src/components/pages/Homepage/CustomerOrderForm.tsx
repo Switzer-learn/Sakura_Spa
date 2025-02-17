@@ -188,15 +188,15 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
   }
 
   return (
-    <div className=" bg-green-700">
+    <div className="bg-green-700 max-h-screen overflow-y-auto">
       {adminPage === false && <Components.Header customerMode={true} />}
       <div id="customerOrderForm" className="flex flex-col items-center h-screen bg-green-700 p-4">
         <form className="w-full max-w-3xl bg-white shadow-lg rounded-lg p-6" onSubmit={handleSubmit}>
           <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">
             Customer Scheduling Form
           </h1>
-          <div className="flex md:flex-col gap-6 border">
-            <div className='flex gap-2 w-full mx-auto border-2'>
+          <div className="flex flex-col gap-6 ">
+            <div className='flex flex-col md:flex-row gap-4 md:gap-2 w-full mx-auto '>
             <div className="w-full sm:w-1/2 shadow-md rounded-lg flex flex-col p-4">
               <span className="text-xl font-semibold mb-4 text-gray-700">Personal Information</span>
               <div className="flex flex-col">
@@ -284,3 +284,4 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
 };
 
 export default CustomerOrderForm;
+
