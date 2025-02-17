@@ -36,6 +36,7 @@ const RevenueReport = () => {
             try {
                 const response = await api.getTransactions();
                 setOriginalData(response || []);
+                console.log(response)
                 setTransactionData(response || []);
             } catch (error) {
                 console.error("Error fetching transactions:", error);
@@ -53,13 +54,40 @@ const RevenueReport = () => {
     }, []);
 
     useEffect(() => {
-        setRows(transactionData.map((data, index) => ({
-            ...data,
-            id: data.id || index,
-            Amount: formatPrice(data.Amount) || 0,
-            paid: paidStatus(data.paid)
-    })));
-        const total = transactionData.reduce((acc: number, transaction: { amount: number }) => acc + transaction.amount, 0);
+        // Group transactions by transaction_id
+        const groupedTransactions = transactionData.reduce((acc: any, transaction: any) => {
+            const existingTransaction = acc.find((t: any) => t.transaction_id === transaction.transaction_id);
+            
+            if (existingTransaction) {
+                // Append service details
+                existingTransaction.service_name += `, ${transaction.service_name}`;
+                existingTransaction.service_duration += transaction.service_duration; // Sum the durations
+            } else {
+                // Create a new entry
+                acc.push({
+                    ...transaction,
+                    id: transaction.transaction_id, // Ensure unique ID
+                    service_name: transaction.service_name,
+                    duration: transaction.service_duration, // Initialize duration as a number
+                    amount: formatPrice(transaction.amount),
+                    paid: paidStatus(transaction.paid),
+                });
+            }
+            
+            return acc;
+        }, []);
+    
+        // Format duration with " min" suffix
+        groupedTransactions.forEach((transaction: any) => {
+            transaction.duration = `${transaction.duration} min`;
+        });
+    
+        setRows(groupedTransactions);
+    
+        // Calculate Grand Total
+        const total = groupedTransactions.reduce((acc: number, transaction: { amount: string }) => 
+            acc + parseInt(transaction.amount.replace(/,/g, ''), 10), 0
+        );
         setGrandTotal(total);
     }, [transactionData]);
 
@@ -78,16 +106,17 @@ const RevenueReport = () => {
     }
 
     const columns: GridColDef[] = [
-        { field: 'transaction_id', headerName: 'ID', width: 70 },
+        { field: 'transaction_id', headerName: 'ID', width: 100 },
         { field: 'customer_name', headerName: 'Nama Customer', width: 200 },
-        { field: 'schedule', headerName: 'Schedule', width: 100 },
-        { field: 'service_name', headerName: 'Service', width: 100 },
-        { field: 'duration', headerName: 'Durasi', width: 70 },
-        { field: 'therapist_name', headerName: 'Nama Therapist', width: 150 },
-        { field: 'paid', headerName: 'Sudah Bayar', width: 100 },
-        { field: 'amount', headerName: 'Jumlah (IDR)', type: 'number', width: 100 },
-        { field: 'payment_method', headerName: 'Payment Method', width: 100 }
+        { field: 'schedule', headerName: 'Schedule', width: 150 },
+        { field: 'service_name', headerName: 'Services', width: 250 }, // Now showing multiple services
+        { field: 'service_duration', headerName: 'Durasi', width: 150 }, // Display multiple durations
+        { field: 'therapist_name', headerName: 'Nama Therapist', width: 200 },
+        { field: 'paid', headerName: 'Sudah Bayar', width: 120 },
+        { field: 'amount', headerName: 'Jumlah (IDR)', type: 'number', width: 150 },
+        { field: 'payment_method', headerName: 'Payment Method', width: 150 },
     ];
+    
 
     const paginationModel = { page: 0, pageSize: 10 };
 
