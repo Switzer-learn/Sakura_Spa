@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // API service functions
 import supabase from '../utils/supabase';
 
@@ -391,6 +392,7 @@ getCurrentUser: async () => {
     return {data:data,status:200};
   },
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   deleteInventory:async(input:any)=>{
     const {error} = await supabase
       .from('inventory')
@@ -428,7 +430,6 @@ getCurrentUser: async () => {
 
   addTransactionService: async (inputData: { transaction_id: number; service_id: number }) => {
     const { transaction_id, service_id } = inputData;
-    console.log(transaction_id, "  ", service_id);
     const { data, error } = await supabase
       .from("transaction_service")
       .insert([{ transaction_id, service_id }]) // Fix: Use an array for bulk insert
@@ -491,8 +492,9 @@ getCurrentUser: async () => {
       return {status:200,message:'deleted successfully'}
   },
 
-  setTherapist:async(input:any)=>{
+  setTherapist:async(input:{transaction_id:string,therapist_id:number})=>{
     const {therapist_id,transaction_id} = input;
+    
     const {error} = await supabase
       .from('transactions')
       .update({

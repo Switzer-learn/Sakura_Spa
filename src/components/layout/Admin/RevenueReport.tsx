@@ -36,7 +36,7 @@ const RevenueReport = () => {
             try {
                 const response = await api.getTransactions();
                 setOriginalData(response || []);
-                console.log(response)
+                //console.log(response)
                 setTransactionData(response || []);
             } catch (error) {
                 console.error("Error fetching transactions:", error);

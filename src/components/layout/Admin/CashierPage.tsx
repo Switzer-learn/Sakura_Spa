@@ -134,18 +134,12 @@ const CashierPage = () => {
   };
   
 
-/*************  ✨ Codeium Command ⭐  *************/
-/**
- * Handles edit transaction request.
- * @param {Object} input - The input data in the format of { transaction_id: string, therapist_name: string }
- * @returns {Promise<void>}
- */
-/******  603f99b3-685a-4834-8b35-9355cd236887  *******/
-  const handleEdit = async (input: { transaction_id: string; therapist_name: string }) => {
+  const handleEdit = async (input: { transaction_id: string; therapist_id: number }) => {
     try {
       const response = await api.setTherapist(input);
-      if (response.status === 200) {
+      if (response.status !== 200) {
         console.log(response.message);
+        return;
       }
       const updatedTransactions = await api.getTransactions();
       setTransactionsData(groupTransactions(updatedTransactions as Transaction[]));
@@ -186,7 +180,7 @@ const CashierPage = () => {
             schedule={transaction.schedule}
             services={transaction.services || []}
             therapist_name={transaction.therapist_name}
-            onEdit={() => handleEdit(transaction)}
+            onEdit={({ therapist_id, transaction_id }) => handleEdit({ therapist_id, transaction_id })}
             onPayment={() => handlePayment(transaction)}
             paid={transaction.paid}
             total_duration={transaction.total_duration || 0}

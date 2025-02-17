@@ -31,7 +31,7 @@ CREATE TABLE employees (
 -- Create Inventory Table
 CREATE TABLE inventory (
     inventory_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) NOT NULL UNIQUE,
     amount INT CHECK (amount >= 0) DEFAULT 0, -- Prevents negative inventory
     unit VARCHAR(50),
     description TEXT,
@@ -59,6 +59,12 @@ CREATE TABLE transactions (
     paid BOOLEAN DEFAULT FALSE,
     amount NUMERIC(10, 2) CHECK (amount >= 0) DEFAULT 0, -- Ensures non-negative amount
     payment_method TEXT
+);
+
+CREATE TABLE transaction_service (
+    id SERIAL PRIMARY KEY,
+    transaction_id VARCHAR REFERENCES transactions(transaction_id) ON DELETE CASCADE,
+    service_id INT REFERENCES services(service_id) ON DELETE CASCADE
 );
 
 -- Enable Row-Level Security (Supabase Best Practice)
