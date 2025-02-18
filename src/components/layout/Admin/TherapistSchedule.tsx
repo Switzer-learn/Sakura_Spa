@@ -1,10 +1,28 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import { api } from "../../../services/api";
+
+// Define types
+interface Transaction {
+  transaction_id: string;
+  customer_name: string;
+  therapist_name: string;
+  schedule: string;
+  service_duration: number;
+}
+
+interface MergedTransaction {
+  transaction_id: string;
+  customer_name: string;
+  therapist_name: string;
+  schedule: string;
+  duration: number;
+}
 
 const TherapistSchedule = () => {
   const startHour = 8; // 8 AM
   const endHour = 21; // 9 PM
-  const timeSlots = Array.from({ length: (endHour - startHour) * 2 }, (_, index) => {
+  const timeSlots: string[] = Array.from({ length: (endHour - startHour) * 2 }, (_, index) => {
     const hour = Math.floor(index / 2) + startHour;
     const minutes = index % 2 === 0 ? "00" : "30";
     return `${hour}:${minutes}`;
@@ -18,26 +36,43 @@ const TherapistSchedule = () => {
   };
 
   const [therapistNames, setTherapistNames] = useState<string[]>([]);
-  const [transactionData, setTransactionData] = useState<any[]>([]);
+  const [transactionData, setTransactionData] = useState<MergedTransaction[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>(getFormattedDate(new Date()));
-  const [assignedColors, setAssignedColors] = useState<{ [customer: string]: string }>({});
+  const [assignedColors, setAssignedColors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     async function fetchData() {
       try {
         const therapists = await api.getTherapist();
-        const transactions = await api.getTransactions();
+        const transactions: Transaction[] = await api.getTransactions();
 
         if (therapists) {
-          setTherapistNames(therapists.map((therapist) => therapist.full_name));
+          setTherapistNames(therapists.map((therapist: any) => therapist.full_name));
         }
 
         if (transactions) {
-          const filteredTransactions = transactions.filter((transaction:any) =>
-            transaction.schedule.slice(0, 10) === selectedDate
+          const filteredTransactions = transactions.filter(
+            (transaction) => transaction.schedule.slice(0, 10) === selectedDate
           );
 
-          setTransactionData(filteredTransactions);
+          // Merge transactions with the same ID and ensure duration is counted only once
+          const mergedTransactions: MergedTransaction[] = Object.values(
+            filteredTransactions.reduce((acc: Record<string, MergedTransaction>, transaction: Transaction) => {
+              if (!acc[transaction.transaction_id]) {
+                acc[transaction.transaction_id] = {
+                  transaction_id: transaction.transaction_id,
+                  customer_name: transaction.customer_name,
+                  therapist_name: transaction.therapist_name,
+                  schedule: transaction.schedule,
+                  duration: 0,
+                };
+              }
+              acc[transaction.transaction_id].duration += transaction.service_duration;
+              return acc;
+            }, {})
+          );
+
+          setTransactionData(mergedTransactions);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -48,15 +83,15 @@ const TherapistSchedule = () => {
 
   useEffect(() => {
     const uniqueCustomers = [...new Set(transactionData.map((t) => t.customer_name))];
-    const colors = uniqueCustomers.reduce((acc, customer) => {
+    const colors: Record<string, string> = uniqueCustomers.reduce((acc: Record<string, string>, customer) => {
       acc[customer] = `hsl(${Math.random() * 360}, 70%, 70%)`; // Random HSL color
       return acc;
-    }, {} as { [customer: string]: string });
+    }, {});
 
     setAssignedColors(colors);
   }, [transactionData]);
 
-  const getTransactionForSlot = (therapist: string, time: string) => {
+  const getTransactionForSlot = (therapist: string, time: string): MergedTransaction | undefined => {
     return transactionData.find((transaction) => {
       if (transaction.therapist_name !== therapist) return false;
 
@@ -79,7 +114,7 @@ const TherapistSchedule = () => {
       {/* Date Picker */}
       <div className="flex justify-between mb-4">
         <label className="font-medium">
-          Select Date: 
+          Select Date:
           <input
             type="date"
             value={selectedDate}
