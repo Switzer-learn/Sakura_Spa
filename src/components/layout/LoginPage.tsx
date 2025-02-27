@@ -63,6 +63,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ staffLogin }) => {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleForgotPassword = async(e:any) =>{
     e.preventDefault();
     const response = await api.forgotPassword(email)
@@ -118,7 +119,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ staffLogin }) => {
 
             {/* Remember Me and Forgot Password */}
             <div className="flex justify-between text-sm text-gray-500">
-              <button onClick={handleForgotPassword} className="hover:text-indigo-500">Forgot password?</button>
+              <button type="button" onClick={handleForgotPassword} className="hover:text-indigo-500">Forgot password?</button>
             </div>
 
             {/* Submit Button */}
