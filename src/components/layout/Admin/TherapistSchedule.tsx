@@ -46,6 +46,8 @@ const TherapistSchedule = () => {
         const therapists = await api.getTherapist();
         const transactions: Transaction[] = await api.getTransactions();
 
+        console.log(transactions)
+
         if (therapists) {
           setTherapistNames(therapists.map((therapist: any) => therapist.full_name));
         }
@@ -100,7 +102,7 @@ const TherapistSchedule = () => {
       const startMinutes = startTime.getMinutes();
       const startTimeFormatted = `${startHour}:${startMinutes === 0 ? "00" : "30"}`;
 
-      const durationSlots = Math.ceil(transaction.duration / 30); // How many slots to block
+      const durationSlots = Math.floor(transaction.duration / 30); // How many slots to block
       const startIndex = timeSlots.indexOf(startTimeFormatted);
 
       return startIndex !== -1 && timeSlots.slice(startIndex, startIndex + durationSlots).includes(time);

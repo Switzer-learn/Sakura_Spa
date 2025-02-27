@@ -147,16 +147,6 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
   // Restrict past dates
   const today = new Date().toISOString().split("T")[0];
 
-  // Generate valid time slots (8 AM - 7 PM in 30-minute increments)
-  const generateTimeSlots = () => {
-    const timeSlots = [];
-    for (let hour = 8; hour < 20; hour++) {
-      timeSlots.push(`${String(hour).padStart(2, "0")}:00`);
-      timeSlots.push(`${String(hour).padStart(2, "0")}:30`);
-    }
-    return timeSlots;
-  };
-
   const handleFetchService = (services:{ service: string; duration: number; price: number; service_id: number }[],newTotal:number) => {
     console.log(services);
     console.log('Total',newTotal);
@@ -165,14 +155,6 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
   }
 
   // Valid time slots based on date
-  const validTimeSlots = generateTimeSlots();
-  const minTime =
-    dates === today
-      ? validTimeSlots.find(
-          (slot) =>
-            slot >= new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
-        ) || "08:00"
-      : "08:00";
 
   if (loading) {
     return (
@@ -248,23 +230,19 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
                 </div>
                 <div className="flex flex-col">
                   <label className="font-medium text-gray-700 mb-2">Time</label>
-                  <select
-                    onChange={(e) => setTime(e.target.value)}
-                    value={time}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    required
-                  >
-                    <option value="" disabled>
-                      Select a time
-                    </option>
-                    {validTimeSlots
-                      .filter((slot) => dates !== today || slot >= minTime)
-                      .map((slot, index) => (
-                        <option key={index} value={slot}>
-                          {slot}
-                        </option>
-                      ))}
-                  </select>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center">
+                      <input
+                        type="time"
+                        value={time}
+                        onChange={(e) => setTime(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-md"
+                        required
+                        min="08:00"
+                        max="20:00"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
