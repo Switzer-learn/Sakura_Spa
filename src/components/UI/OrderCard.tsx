@@ -62,6 +62,15 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
     return 'bg-green-200';
   };
 
+  const handleDelete = async ()=>{
+    confirm("Are you sure you want to delete this transaction?");
+    const response = await api.deleteTransaction({transaction_id})
+    if(response.status===200){
+      alert('Transaction successfully deleted');
+    }
+    window.location.reload();
+  }
+
   const handleDownloadInvoice = () => {
     const transaction = {
       transaction_id,
@@ -78,6 +87,9 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
     <div className={`${getCardColor()} shadow-md rounded-2xl p-4 w-full max-w-md mx-auto border m-2`}>
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">{customer_name}</h3>
+        <div>
+          <button onClick={handleDelete} className='bg-red-500 text-white px-3 py-1 text-sm rounded-lg hover:bg-red-600 focus:outline-none'>Delete</button>
+        </div>
         {paid && (
           <button
             onClick={handleDownloadInvoice}
@@ -100,6 +112,8 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
           ))}
         </ul>
       </div>
+
+      
 
       {isEditing && (
         <div className="mt-4">

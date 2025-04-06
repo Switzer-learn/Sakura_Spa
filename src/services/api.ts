@@ -492,6 +492,17 @@ getCurrentUser: async () => {
       return {status:200,message:'deleted successfully'}
   },
 
+  deleteTransaction:async({transaction_id}:{transaction_id:string})=>{
+    const {error} = await supabase
+      .from('transactions')
+      .delete()
+      .eq('transaction_id',transaction_id)
+      if(error){
+        return {status:500,message:error}
+      }
+      return {status:200,message:'Transaction deleted successfully'}
+  },
+
   setTherapist:async(input:{transaction_id:string,therapist_id:number})=>{
     const {therapist_id,transaction_id} = input;
     
