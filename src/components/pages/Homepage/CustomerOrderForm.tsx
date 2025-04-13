@@ -169,6 +169,19 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
     );
   }
 
+  function calculateFinishTime(startTime: string, duration: number): string {
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const totalMinutes = hours * 60 + minutes + duration;
+    
+    const finishHours = Math.floor(totalMinutes / 60);
+    const finishMinutes = totalMinutes % 60;
+    
+    const formattedHours = finishHours.toString().padStart(2, '0');
+    const formattedMinutes = finishMinutes.toString().padStart(2, '0');
+    
+    return `${formattedHours}:${formattedMinutes}`;
+  }
+
   return (
     <div className="bg-green-700 max-h-screen overflow-y-auto">
       {adminPage === false && <Components.Header customerMode={true} />}
@@ -239,12 +252,17 @@ const CustomerOrderForm: React.FC<CustomerOrderFormProps> = ({ walkIn, adminPage
                         className="px-3 py-2 border border-gray-300 rounded-md"
                         required
                         min="08:00"
-                        max="20:00"
+                        max="22:00"
                       />
                     </div>
                   </div>
                 </div>
               </div>
+              {time && service.length > 0 && (
+                <p className="mt-2 text-sm text-gray-600">
+                  Estimated finish time: {calculateFinishTime(time, service.reduce((total, s) => total + s.duration, 0))}
+                </p>
+              )}
             </div>
             </div>
             <CustomerServiceSelection onFetchService={handleFetchService} />

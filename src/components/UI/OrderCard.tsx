@@ -39,6 +39,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [therapistOptions, setTherapistOptions] = useState<any[]>([]);
   const [selectedTherapist, setSelectedTherapist] = useState<string | null>(therapist_name);
+  const [estimatedFinishTime,setEstimatedFinishTime] = useState<string>('');
 
   useEffect(() => {
     const fetchTherapists = async () => {
@@ -83,6 +84,26 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
     downloadInvoice(transaction);
   };
 
+  useEffect(() => {
+    const scheduleTime = schedule.split('T')[1];
+    const finishTime = calculateFinishTime(scheduleTime, total_duration);
+    setEstimatedFinishTime(finishTime);
+  }, [schedule, total_duration]);
+
+  function calculateFinishTime(startTime: string, duration: number): string {
+    
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const totalMinutes = hours * 60 + minutes + duration;
+    
+    const finishHours = Math.floor(totalMinutes / 60);
+    const finishMinutes = totalMinutes % 60;
+    
+    const formattedHours = finishHours.toString().padStart(2, '0');
+    const formattedMinutes = finishMinutes.toString().padStart(2, '0');
+    
+    return `${formattedHours}:${formattedMinutes}`;
+  }
+
   return (
     <div className={`${getCardColor()} shadow-md rounded-2xl p-4 w-full max-w-md mx-auto border m-2`}>
       <div className="flex justify-between items-center">
@@ -100,6 +121,7 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
         )}
       </div>
       <p className="text-sm text-gray-600"><span className="font-semibold">Schedule:</span> {schedule}</p>
+      <p className="text-sm text-gray-600"><span className="font-semibold">Estimated Finish Time:</span> {estimatedFinishTime}</p>
       <p className="text-sm text-gray-600"><span className="font-semibold">Therapist:</span> {therapist_name || 'Not assigned'}</p>
       <p className="text-sm text-gray-600"><span className="font-semibold">Total Duration:</span> {total_duration} min</p>
       <p className="text-sm text-gray-600"><span className="font-semibold">Total Amount:</span> Rp {amount.toLocaleString()}</p>
@@ -112,8 +134,6 @@ const TransactionCard: React.FC<TransactionCardProps> = ({
           ))}
         </ul>
       </div>
-
-      
 
       {isEditing && (
         <div className="mt-4">
